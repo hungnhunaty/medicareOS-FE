@@ -1,0 +1,60 @@
+<div class="space-y-8 animate-fade-in">
+  <!-- Header -->
+  <div>
+    <h2 class="text-2xl font-black text-slate-900">Quản lý Hóa Đơn & Thanh Toán</h2>
+    <p class="text-slate-500 mt-1">Xem lại lịch sử thanh toán các dịch vụ y tế của bạn.</p>
+  </div>
+
+  <div *ngIf="isLoading" class="text-center py-12">
+    <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-indigo-600 border-r-transparent"></div>
+    <p class="mt-4 text-slate-500 font-medium">Đang tải dữ liệu hóa đơn...</p>
+  </div>
+
+  <div *ngIf="!isLoading" class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex bg-slate-100 p-1 rounded-xl">
+        <button (click)="setInvoiceFilter('all')" 
+          [class.bg-white]="invoiceFilter === 'all'" [class.shadow-sm]="invoiceFilter === 'all'"
+          class="px-5 py-2 text-sm font-bold rounded-lg transition-all text-slate-600">Tất cả</button>
+        <button (click)="setInvoiceFilter('unpaid')" 
+          [class.bg-white]="invoiceFilter === 'unpaid'" [class.shadow-sm]="invoiceFilter === 'unpaid'"
+          class="px-5 py-2 text-sm font-bold rounded-lg transition-all text-slate-600">Chờ thanh toán</button>
+        <button (click)="setInvoiceFilter('paid')" 
+          [class.bg-white]="invoiceFilter === 'paid'" [class.shadow-sm]="invoiceFilter === 'paid'"
+          class="px-5 py-2 text-sm font-bold rounded-lg transition-all text-slate-600">Đã thanh toán</button>
+      </div>
+    </div>
+
+    <div *ngIf="filteredInvoices.length === 0" class="bg-white p-12 rounded-[2rem] border border-slate-100 text-center">
+      <div class="text-5xl mb-4 opacity-50">🧾</div>
+      <h3 class="text-lg font-black text-slate-700">Không có hóa đơn nào</h3>
+      <p class="text-slate-400 font-medium mt-1">Bạn chưa có hóa đơn nào phù hợp với bộ lọc này.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div *ngFor="let inv of filteredInvoices" 
+        class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-6 group cursor-default">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-[11px] font-black text-slate-400 uppercase tracking-widest">{{ inv.invoiceCode }}</p>
+            <p class="text-2xl font-black text-indigo-600 mt-1">{{ inv.totalAmount | number:'1.0-0' }}đ</p>
+          </div>
+          <span class="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider inline-flex items-center gap-1.5"
+            [ngClass]="inv.status === 'Đã thanh toán' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-rose-50 text-rose-600 border border-rose-100'">
+            <span *ngIf="inv.status === 'Đã thanh toán'">✓</span>
+            <span *ngIf="inv.status !== 'Đã thanh toán'">⏳</span>
+            {{ inv.status }}
+          </span>
+        </div>
+        <div class="pt-5 border-t border-slate-100/80 flex items-center justify-between">
+          <p class="text-sm text-slate-500 font-medium flex items-center gap-2">
+            <span>📅</span> {{ inv.date }}
+          </p>
+          <button *ngIf="inv.status !== 'Đã thanh toán'" class="text-xs font-bold text-rose-600 bg-rose-50 px-3 py-1.5 rounded-lg hover:bg-rose-100">
+            Thanh toán ngay
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

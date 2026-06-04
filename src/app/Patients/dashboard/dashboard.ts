@@ -16,9 +16,9 @@ export class PatientDashboard implements OnInit, OnDestroy {
   profile: any = null;
   history: any[] = [];
   currentQueue: any = null;
-  invoices: any[] = [];
-  filteredInvoices: any[] = [];
-  invoiceFilter: 'all' | 'paid' | 'unpaid' = 'all';
+  filteredHistory: any[] = [];
+  historySearchTerm: string = '';
+  historyTimeFilter: 'all' | '3months' | '6months' = 'all';
   userId?: number;
 
   // SignalR Subscriptions
@@ -84,8 +84,8 @@ export class PatientDashboard implements OnInit, OnDestroy {
         this.profile = data.profile;
         this.history = data.history;
         this.currentQueue = data.currentQueue;
-        this.invoices = data.invoices || [];
-        this.filterInvoices();
+        this.filteredHistory = [...this.history];
+        this.filterHistory();
         
         if (this.profile) {
           this.editEmail = (this.profile.email && this.profile.email !== 'Chưa cập nhật') ? this.profile.email : '';
@@ -96,19 +96,48 @@ export class PatientDashboard implements OnInit, OnDestroy {
     });
   }
 
-  setInvoiceFilter(filter: 'all' | 'paid' | 'unpaid'): void {
-    this.invoiceFilter = filter;
-    this.filterInvoices();
+  setHistoryTimeFilter(filter: 'all' | '3months' | '6months'): void {
+    this.historyTimeFilter = filter;
+    this.filterHistory();
   }
 
-  filterInvoices(): void {
-    if (this.invoiceFilter === 'all') {
-      this.filteredInvoices = [...this.invoices];
-    } else if (this.invoiceFilter === 'paid') {
-      this.filteredInvoices = this.invoices.filter(i => i.status === 'Đã thanh toán');
-    } else {
-      this.filteredInvoices = this.invoices.filter(i => i.status === 'Chờ thanh toán');
+  onSearchHistory(): void {
+    this.filterHistory();
+  }
+
+  filterHistory(): void {
+    let temp = [...this.history];
+
+    // Lọc theo thời gian
+    if (this.historyTimeFilter !== 'all') {
+      const now = new Date();
+      const monthsToSub = this.historyTimeFilter === '3months' ? 3 : 6;
+      const thresholdDate = new Date(now.setMonth(now.getMonth() - monthsToSub));
+
+      temp = temp.filter(h => {
+        if (!h.visitDate || h.visitDate === 'N/A') return false;
+        // Parse dd/MM/yyyy HH:mm
+        const parts = h.visitDate.split(' ');
+        const dateParts = parts[0].split('/');
+        if (dateParts.length === 3) {
+          const vDate = new Date(parseInt(dateParts[2]), parseInt(dateParts[1]) - 1, parseInt(dateParts[0]));
+          return vDate >= thresholdDate;
+        }
+        return false;
+      });
     }
+
+    // Lọc theo từ khóa
+    if (this.historySearchTerm.trim()) {
+      const term = this.historySearchTerm.toLowerCase();
+      temp = temp.filter(h => 
+        (h.doctorName && h.doctorName.toLowerCase().includes(term)) ||
+        (h.diagnosis && h.diagnosis.toLowerCase().includes(term)) ||
+        (h.department && h.department.toLowerCase().includes(term))
+      );
+    }
+
+    this.filteredHistory = temp;
     this.cd.detectChanges();
   }
 

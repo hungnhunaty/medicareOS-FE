@@ -94,7 +94,8 @@ export const routes: Routes = [
         data: { roles: ['Patient', 'User'] },
         children: [
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-            { path: 'dashboard', component: PatientDashboard }
+            { path: 'dashboard', component: PatientDashboard },
+            { path: 'invoices', loadComponent: () => import('./Patients/invoices/invoices').then(m => m.PatientInvoices) }
         ]
     }
 ];
