@@ -17,6 +17,7 @@ export class PatientInvoices implements OnInit {
   invoiceFilter: 'all' | 'paid' | 'unpaid' = 'all';
   userId?: number;
   isLoading = true;
+  selectedInvoice: any = null;
 
   constructor(
     private patientService: PatientPortalService,
@@ -71,6 +72,16 @@ export class PatientInvoices implements OnInit {
     } else {
       this.filteredInvoices = this.invoices.filter(i => i.status === 'Chờ thanh toán');
     }
+    this.cd.detectChanges();
+  }
+
+  openInvoiceDetails(inv: any): void {
+    this.selectedInvoice = inv;
+    this.cd.detectChanges();
+  }
+
+  closeInvoiceDetails(): void {
+    this.selectedInvoice = null;
     this.cd.detectChanges();
   }
 }

@@ -32,8 +32,8 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div *ngFor="let inv of filteredInvoices" 
-        class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-6 group cursor-default">
+      <div *ngFor="let inv of filteredInvoices" (click)="openInvoiceDetails(inv)"
+        class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-6 group cursor-pointer hover:border-indigo-200">
         <div class="flex justify-between items-start">
           <div>
             <p class="text-[11px] font-black text-slate-400 uppercase tracking-widest">{{ inv.invoiceCode }}</p>
@@ -50,11 +50,98 @@
           <p class="text-sm text-slate-500 font-medium flex items-center gap-2">
             <span>📅</span> {{ inv.date }}
           </p>
-          <button *ngIf="inv.status !== 'Đã thanh toán'" class="text-xs font-bold text-rose-600 bg-rose-50 px-3 py-1.5 rounded-lg hover:bg-rose-100">
-            Thanh toán ngay
-          </button>
+          <span class="text-xs font-bold text-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity">Xem chi tiết &rarr;</span>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Chi Tiết Hóa Đơn -->
+<div *ngIf="selectedInvoice" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+  <div class="bg-white rounded-[2rem] w-full max-w-2xl max-h-full flex flex-col shadow-2xl border border-slate-100 overflow-hidden animate-scale-up">
+    
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50/50 shrink-0">
+      <div class="flex items-center gap-4">
+        <div class="h-12 w-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl shadow-sm border border-indigo-100">
+          🧾
+        </div>
+        <div>
+          <h3 class="text-lg font-black text-slate-900">Chi Tiết Hóa Đơn</h3>
+          <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-0.5">{{ selectedInvoice.invoiceCode }}</p>
+        </div>
+      </div>
+      <button (click)="closeInvoiceDetails()" class="h-10 w-10 flex items-center justify-center rounded-full hover:bg-slate-200 text-slate-500 transition-colors">
+        <span class="text-xl">✕</span>
+      </button>
+    </div>
+
+    <!-- Modal Body (Scrollable) -->
+    <div class="p-6 overflow-y-auto flex-1">
+      
+      <!-- Thông tin tổng quan -->
+      <div class="flex flex-col sm:flex-row gap-4 mb-8">
+        <div class="flex-1 p-4 rounded-2xl bg-slate-50 border border-slate-100">
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Ngày lập</p>
+          <p class="text-sm font-bold text-slate-900">{{ selectedInvoice.date }}</p>
+        </div>
+        <div class="flex-1 p-4 rounded-2xl bg-slate-50 border border-slate-100">
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">Trạng thái</p>
+          <span class="px-2.5 py-1 rounded-lg text-xs font-bold inline-flex items-center gap-1.5"
+            [ngClass]="selectedInvoice.status === 'Đã thanh toán' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'">
+            {{ selectedInvoice.status }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Bảng chi tiết dịch vụ/thuốc -->
+      <div>
+        <h4 class="text-sm font-black text-slate-900 mb-4 flex items-center gap-2">
+          <span>📋</span> Danh sách dịch vụ & thuốc
+        </h4>
+        
+        <div class="border border-slate-200 rounded-2xl overflow-hidden">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 border-b border-slate-200">
+              <tr>
+                <th class="px-4 py-3 font-bold text-slate-500 w-1/2">Tên Mục</th>
+                <th class="px-4 py-3 font-bold text-slate-500 text-center">SL</th>
+                <th class="px-4 py-3 font-bold text-slate-500 text-right">Đơn giá</th>
+                <th class="px-4 py-3 font-bold text-slate-500 text-right">Thành tiền</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr *ngFor="let item of selectedInvoice.items" class="hover:bg-slate-50/50 transition-colors">
+                <td class="px-4 py-3 font-medium text-slate-800">{{ item.name }}</td>
+                <td class="px-4 py-3 text-center text-slate-600">{{ item.quantity }}</td>
+                <td class="px-4 py-3 text-right text-slate-600">{{ item.unitPrice | number:'1.0-0' }}đ</td>
+                <td class="px-4 py-3 text-right font-bold text-slate-900">{{ (item.quantity * item.unitPrice) | number:'1.0-0' }}đ</td>
+              </tr>
+              <tr *ngIf="!selectedInvoice.items || selectedInvoice.items.length === 0">
+                <td colspan="4" class="px-4 py-8 text-center text-slate-400 italic">Không có chi tiết dữ liệu.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="p-6 border-t border-slate-100 bg-slate-50/50 shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">Tổng cộng</p>
+        <p class="text-2xl font-black text-indigo-600">{{ selectedInvoice.totalAmount | number:'1.0-0' }} VNĐ</p>
+      </div>
+      
+      <button *ngIf="selectedInvoice.status !== 'Đã thanh toán'" 
+        class="px-8 py-3.5 rounded-2xl font-black text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] transition-all shadow-lg shadow-indigo-200 text-sm">
+        Thanh toán ngay
+      </button>
+      <button *ngIf="selectedInvoice.status === 'Đã thanh toán'" (click)="closeInvoiceDetails()"
+        class="px-8 py-3.5 rounded-2xl font-bold text-slate-700 bg-slate-200 hover:bg-slate-300 active:scale-[0.98] transition-all text-sm">
+        Đóng cửa sổ
+      </button>
     </div>
   </div>
 </div>
