@@ -16,6 +16,9 @@ export class PatientDashboard implements OnInit, OnDestroy {
   profile: any = null;
   history: any[] = [];
   currentQueue: any = null;
+  invoices: any[] = [];
+  filteredInvoices: any[] = [];
+  invoiceFilter: 'all' | 'paid' | 'unpaid' = 'all';
   userId?: number;
 
   // SignalR Subscriptions
@@ -81,6 +84,9 @@ export class PatientDashboard implements OnInit, OnDestroy {
         this.profile = data.profile;
         this.history = data.history;
         this.currentQueue = data.currentQueue;
+        this.invoices = data.invoices || [];
+        this.filterInvoices();
+        
         if (this.profile) {
           this.editEmail = (this.profile.email && this.profile.email !== 'Chưa cập nhật') ? this.profile.email : '';
         }
@@ -88,6 +94,22 @@ export class PatientDashboard implements OnInit, OnDestroy {
       },
       error: (err) => console.error('Lỗi khi tải dữ liệu Dashboard bệnh nhân:', err)
     });
+  }
+
+  setInvoiceFilter(filter: 'all' | 'paid' | 'unpaid'): void {
+    this.invoiceFilter = filter;
+    this.filterInvoices();
+  }
+
+  filterInvoices(): void {
+    if (this.invoiceFilter === 'all') {
+      this.filteredInvoices = [...this.invoices];
+    } else if (this.invoiceFilter === 'paid') {
+      this.filteredInvoices = this.invoices.filter(i => i.status === 'Đã thanh toán');
+    } else {
+      this.filteredInvoices = this.invoices.filter(i => i.status === 'Chờ thanh toán');
+    }
+    this.cd.detectChanges();
   }
 
   onUpdateEmail(): void {
