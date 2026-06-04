@@ -1,0 +1,216 @@
+<div class="space-y-8 animate-fade-in">
+
+  <!-- Profile & Highlight Section -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 space-y-6">
+      <!-- User Card -->
+      <div
+        class="bg-gradient-to-br from-indigo-600 to-rose-500 rounded-[2.5rem] p-8 text-white shadow-xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 p-8 opacity-10 text-8-xl">❤️</div>
+        <div class="relative z-10 space-y-6">
+          <div class="flex items-center gap-4">
+            <div
+              class="h-16 w-16 rounded-3xl bg-white/20 backdrop-blur-md flex items-center justify-center text-3xl shadow-inner">
+              👤
+            </div>
+            <div>
+              <h3 class="text-2xl font-black">{{ profile?.fullName }}</h3>
+              <p class="text-white/70 font-bold tracking-widest uppercase text-[10px]">Mã định danh: {{
+                profile?.patientCode }}</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4">
+            <div class="p-3 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
+              <p class="text-[9px] font-black uppercase opacity-60">Nhóm máu</p>
+              <p class="text-sm font-black">{{ profile?.bloodType }}</p>
+            </div>
+            <div class="p-3 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
+              <p class="text-[9px] font-black uppercase opacity-60">Giới tính</p>
+              <p class="text-sm font-black">{{ profile?.gender }}</p>
+            </div>
+            <div class="p-3 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
+              <p class="text-[9px] font-black uppercase opacity-60">Ngày sinh</p>
+              <p class="text-sm font-black">{{ profile?.dob }}</p>
+            </div>
+            <div class="p-3 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10">
+              <p class="text-[9px] font-black uppercase opacity-60">SĐT</p>
+              <p class="text-sm font-black">{{ profile?.phone }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Update Email Card -->
+      <div class="bg-white rounded-[2.5rem] p-6 border border-slate-200 shadow-sm space-y-4">
+        <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+          <span>📧</span> Thông tin liên lạc & Khôi phục mật khẩu
+        </h4>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="flex-1 relative">
+            <input type="email" [(ngModel)]="editEmail" placeholder="Nhập địa chỉ email của bạn"
+              class="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-100 outline-none transition-all text-sm text-slate-900 bg-slate-50">
+          </div>
+          <button (click)="onUpdateEmail()" [disabled]="isUpdatingEmail"
+            class="px-6 py-3 rounded-2xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] transition-all disabled:bg-slate-300 text-sm whitespace-nowrap">
+            {{ isUpdatingEmail ? 'Đang lưu...' : 'Lưu Email' }}
+          </button>
+        </div>
+        <p class="text-[11px] text-slate-400 leading-relaxed italic">
+          * Vui lòng cập nhật email chính xác để sử dụng chức năng **Quên mật khẩu** khi cần thiết lập lại mật khẩu của
+          bạn.
+        </p>
+      </div>
+    </div>
+
+    <!-- Live Queue Status -->
+    <div class="bg-white rounded-[2.5rem] p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+      <div>
+        <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Trạng thái hàng đợi hiện tại</h4>
+        <div *ngIf="!currentQueue" class="text-center py-8">
+          <p class="text-slate-300 text-xs font-medium italic">Bạn hiện không có lịch khám đang chờ trong hôm nay.</p>
+        </div>
+        <div *ngIf="currentQueue" class="space-y-4">
+          <div class="flex items-center justify-between p-4 rounded-3xl"
+            [class.animate-pulse]="currentQueue.statusCode === 1" [ngClass]="getStatusClass(currentQueue.statusCode)">
+            <div class="flex items-center gap-3">
+              <span class="text-xl">{{ currentQueue.statusCode === 1 ? '📢' : (currentQueue.statusCode === 3 ? '⚠️' :
+                '⏲️') }}</span>
+              <div>
+                <p class="text-sm font-black">{{ currentQueue.status }}</p>
+                <p class="text-[10px] font-bold opacity-70">{{ currentQueue.department }} - {{ currentQueue.clinicName
+                  }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chi tiết Hàng đợi của Bệnh nhân -->
+          <div *ngIf="currentQueue.statusCode !== 3"
+            class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100/80">
+            <div class="text-center border-r border-slate-200">
+              <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Số thứ tự khám</span>
+              <p class="text-2xl font-black text-indigo-600 mt-1">#{{ currentQueue.queueNumber }}</p>
+            </div>
+            <div class="text-center">
+              <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Đang chờ phía trước</span>
+              <p class="text-2xl font-black text-rose-500 mt-1">{{ currentQueue.waitingAhead }} ca</p>
+            </div>
+          </div>
+
+          <!-- Bảng Hàng Chờ Phụ khi bị lỡ lượt -->
+          <div *ngIf="currentQueue.statusCode === 3"
+            class="bg-rose-50/60 border border-rose-200/80 rounded-2xl p-4 space-y-2.5">
+            <p class="text-xs font-bold text-rose-700 flex items-center gap-1.5 leading-relaxed">
+              <span>⚠️</span> Bạn đã bỏ lỡ lượt khám nên được đưa vào hàng chờ phụ. Vui lòng đợi đến lượt khám...
+            </p>
+            <div class="grid grid-cols-2 gap-3 bg-white/80 p-3 rounded-xl border border-rose-100/50 text-center">
+              <div>
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Số thứ tự</span>
+                <p class="text-lg font-black text-rose-600 mt-0.5">#{{ currentQueue.queueNumber }}</p>
+              </div>
+              <div>
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Trạng thái</span>
+                <p class="text-xs font-black text-rose-500 mt-1">Hàng chờ phụ</p>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-[11px] text-center font-medium leading-relaxed">
+            <span *ngIf="currentQueue.statusCode === 1" class="text-emerald-600 font-bold">Đã tới lượt! Vui lòng di
+              chuyển vào phòng khám ngay.</span>
+            <span *ngIf="currentQueue.statusCode === 0" class="text-slate-500">Vui lòng theo dõi máy điện thoại, hệ
+              thống sẽ tự động rung chuông báo khi tới lượt bạn.</span>
+            <span *ngIf="currentQueue.statusCode === 3" class="text-rose-500 italic">Hệ thống sẽ thông báo lại khi bác
+              sĩ gọi khám lượt tiếp theo của bạn.</span>
+          </p>
+        </div>
+      </div>
+      <div class="mt-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 text-center">
+        <p class="text-[10px] font-bold text-slate-400 uppercase leading-relaxed">
+          Vui lòng đến trực tiếp quầy tiếp đón để đăng ký khám bệnh
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Medical History Timeline -->
+  <div class="space-y-6">
+    <h3 class="text-xl font-black text-slate-900 px-2">Lịch Sử Khám Bệnh & Đơn Thuốc</h3>
+
+    <div class="space-y-4">
+      <div *ngFor="let h of history"
+        class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-xs hover:shadow-md transition-all group">
+        <div class="flex flex-col md:flex-row md:items-start gap-6">
+          <!-- Date Column -->
+          <div class="w-full md:w-32 shrink-0">
+            <p class="text-lg font-black text-slate-900">{{ h.visitDate ? h.visitDate.split(' ')[0] : 'N/A' }}</p>
+            <p class="text-xs font-bold text-slate-400 uppercase">{{ (h.visitDate && h.visitDate.includes(' ')) ?
+              h.visitDate.split(' ')[1] : '' }}</p>
+          </div>
+
+          <!-- Info Column -->
+          <div class="flex-1 space-y-4">
+            <div class="flex flex-wrap items-center gap-3">
+              <span class="px-3 py-1 rounded-lg bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase">{{
+                h.department }}</span>
+              <span class="text-slate-300">•</span>
+              <span class="text-sm font-bold text-slate-700">BS. {{ h.doctorName }}</span>
+            </div>
+
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+              <p class="text-[10px] font-black text-slate-400 uppercase mb-1">Kết luận của bác sĩ</p>
+              <p class="text-sm font-bold text-slate-900">{{ h.diagnosis }}</p>
+              <p class="text-xs text-slate-500 mt-1 italic">{{ h.treatmentPlan }}</p>
+            </div>
+
+            <!-- Medications Tags -->
+            <div *ngIf="h.prescriptions.length > 0" class="space-y-2">
+              <p class="text-[10px] font-black text-slate-400 uppercase">Đơn thuốc được kê</p>
+              <div class="flex flex-wrap gap-2">
+                <span *ngFor="let med of h.prescriptions"
+                  class="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 flex items-center gap-2">
+                  <span class="text-rose-500">💊</span>
+                  {{ med.medicationName }} (x{{ med.quantity }})
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Custom Modal Gọi Khám (Rung + Chuông) -->
+<div *ngIf="isCalledModalOpen"
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md animate-fade-in">
+  <div
+    class="bg-white rounded-[2.5rem] w-full max-w-md max-h-full p-6 sm:p-8 shadow-2xl border border-slate-100 text-center space-y-4 sm:space-y-6 animate-scale-up mx-4">
+    <!-- Pulsing Alert Icon -->
+    <div class="mx-auto h-16 w-16 rounded-full bg-rose-50 flex items-center justify-center text-3xl animate-bounce">
+      📢
+    </div>
+
+    <div class="space-y-1">
+      <h3 class="text-xl sm:text-2xl font-black text-rose-600 tracking-tight">ĐÃ ĐẾN LƯỢT KHÁM!</h3>
+      <p class="text-slate-500 font-medium text-xs sm:text-sm">Vui lòng di chuyển đến phòng khám ngay lập tức.</p>
+    </div>
+
+    <!-- Clinic & Queue Number Info -->
+    <div class="bg-rose-50 border border-rose-100 p-4 sm:p-6 rounded-3xl space-y-1 sm:space-y-2">
+      <p class="text-[9px] sm:text-[10px] font-black text-rose-400 uppercase tracking-widest">Phòng khám chỉ định</p>
+      <p class="text-lg sm:text-xl font-black text-rose-950">{{ calledClinicName }}</p>
+
+      <div class="h-px bg-rose-200/50 my-2 sm:my-3"></div>
+
+      <p class="text-[9px] sm:text-[10px] font-black text-rose-400 uppercase tracking-widest">Số thứ tự khám của bạn
+      </p>
+      <p class="text-2xl sm:text-3xl font-black text-rose-600">#{{ calledQueueNumber }}</p>
+    </div>
+
+    <!-- Confirm button -->
+    <button (click)="dismissCalledAlert()"
+      class="w-full py-3.5 px-6 rounded-2xl bg-rose-600 text-white font-bold hover:bg-rose-700 active:scale-[0.98] transition-all shadow-lg shadow-rose-500/30 text-xs sm:text-sm">
+      Tôi Đã Hiểu (Tắt báo chuông)
+    </button>
+  </div>
+</div>

@@ -1,0 +1,37 @@
+<div class="reject-container">
+  <div class="background-glows">
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+  </div>
+  
+  <div class="glass-card">
+    <div class="icon-wrapper">
+      <div class="shield-pulse"></div>
+      <div class="shield-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 22C12 22 20 18 20 12V5L12 2L4 5V12C4 18 12 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 8V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 16H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <h1 class="error-code">403</h1>
+    <h2 class="error-title">Truy Cập Bị Từ Chối</h2>
+    <p class="error-message">
+      Xin lỗi, tài khoản của bạn không có quyền truy cập vào phân hệ này. 
+      Vui lòng kiểm tra lại quyền hạn của tài khoản hoặc liên hệ bộ phận hỗ trợ kỹ thuật để biết thêm chi tiết.
+    </p>
+
+    <div class="actions">
+      <button (click)="goBack()" class="btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Quay lại Trang Chủ
+      </button>
+      <a routerLink="/login" class="btn-secondary">Đăng Nhập Tài Khoản Khác</a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,235 @@
+<div class="space-y-6 animate-fade-in">
+  <!-- Header Title & Action -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-100">
+    <div>
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-black tracking-tight text-slate-900">Kho Dược Phẩm</h1>
+        <span class="px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs font-bold border border-amber-100">
+          {{ filteredMedications.length }} loại thuốc/vật tư
+        </span>
+      </div>
+      <p class="text-sm font-medium text-slate-500 mt-1">Quản lý danh mục, hoạt chất thành phần và theo dõi chặt chẽ
+        lượng tồn kho y tế.</p>
+    </div>
+    <div class="flex flex-wrap items-center gap-3 shrink-0">
+      <button (click)="openAddModal()"
+        class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:from-amber-600 hover:to-orange-600 transition-all shadow-md shadow-amber-500/10 flex items-center gap-2">
+        <span class="text-lg leading-none">+</span>
+        <span>Thêm Thuốc Mới</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Search & Filters Card -->
+  <div
+    class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+
+    <!-- Search keyword -->
+    <div class="relative w-full sm:w-80">
+      <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
+      <input type="text" [(ngModel)]="searchKeyword" placeholder="Tìm tên thuốc, thành phần, mã..."
+        class="w-full rounded-xl bg-slate-50 py-2.5 pl-10 pr-4 text-sm border border-slate-200 focus:bg-white focus:outline-none focus:border-amber-500 transition-all font-medium placeholder:text-slate-400">
+    </div>
+
+    <!-- Status Filter -->
+    <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+      <span class="text-xs font-bold text-slate-400 uppercase tracking-wider hidden md:inline">Tình trạng:</span>
+      <select [(ngModel)]="filterStatus"
+        class="w-full sm:w-auto rounded-xl bg-slate-50 py-2.5 px-4 text-sm border border-slate-200 focus:bg-white focus:outline-none focus:border-amber-500 font-semibold text-slate-700 transition-all">
+        <option value="Tất cả trạng thái">Tất cả trạng thái</option>
+        <option value="Ổn định">Tồn kho Ổn định</option>
+        <option value="Sắp hết">Sắp hết (Dưới 300)</option>
+      </select>
+      <button *ngIf="searchKeyword || filterStatus !== 'Tất cả trạng thái'"
+        (click)="searchKeyword = ''; filterStatus = 'Tất cả trạng thái'"
+        class="px-3 py-2 text-xs font-bold text-amber-600 hover:bg-amber-50 rounded-lg transition-all shrink-0">
+        Xóa lọc
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Table Card -->
+  <div class="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-xs">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm whitespace-nowrap">
+        <thead
+          class="bg-slate-50/75 text-slate-400 border-b border-slate-100 uppercase text-[10px] tracking-wider font-bold">
+          <tr>
+            <th class="px-6 py-4">Mã Thuốc</th>
+            <th class="px-6 py-4">Tên thuốc & Hoạt chất</th>
+            <th class="px-6 py-4 text-center">Đơn vị</th>
+            <th class="px-6 py-4 text-right">Tồn kho</th>
+            <th class="px-6 py-4 text-right">Đơn giá</th>
+            <th class="px-6 py-4 text-center">Trạng thái</th>
+            <th class="px-6 py-4 text-right">Thao tác kho</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100/60">
+          <tr *ngIf="filteredMedications.length === 0">
+            <td colspan="7" class="px-6 py-12 text-center text-slate-400 font-medium">
+              Không tìm thấy dược phẩm nào khớp với tiêu chí tìm kiếm.
+            </td>
+          </tr>
+          <tr *ngFor="let med of filteredMedications" class="hover:bg-slate-50/50 transition-all group"
+            [ngClass]="med.status === 'Sắp hết' ? 'bg-rose-50/20' : ''">
+            <td class="px-6 py-4 font-black text-slate-900">{{ med.code }}</td>
+            <td class="px-6 py-4">
+              <p class="font-bold text-slate-900 group-hover:text-amber-600 transition-colors">{{ med.name }}</p>
+              <p class="text-xs text-slate-400 font-medium mt-0.5 flex items-center gap-1">
+                <span class="text-[10px] bg-slate-100 text-slate-500 px-1 rounded font-bold">Thành phần</span>
+                <span>{{ med.ingredient }}</span>
+              </p>
+            </td>
+            <td class="px-6 py-4 text-slate-600 font-semibold text-center text-xs">
+              <span class="bg-slate-50 border border-slate-100 px-2 py-0.5 rounded">{{ med.unit }}</span>
+            </td>
+            <td class="px-6 py-4 font-black text-right text-base tracking-tight"
+              [ngClass]="med.quantity < 300 ? 'text-rose-600' : 'text-slate-900'">
+              {{ med.quantity | number }}
+            </td>
+            <td class="px-6 py-4 font-bold text-slate-800 text-right">
+              {{ med.price | currency:'VND':'symbol':'1.0-0' }}
+            </td>
+            <td class="px-6 py-4 text-center">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold border"
+                [ngClass]="med.status === 'Ổn định' ? 'bg-slate-50 text-slate-700 border-slate-200' : 'bg-rose-50 text-rose-600 border-rose-200 animate-pulse'">
+                {{ med.status }}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <div class="flex items-center justify-end gap-1">
+                <button (click)="openStockModal(med)"
+                  class="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold text-xs transition-all border border-amber-200/60 shadow-2xs">
+                  📦 Nhập kho
+                </button>
+                <button (click)="openEditModal(med)"
+                  class="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 font-medium transition-all text-xs"
+                  title="Chỉnh sửa">
+                  ✏️ Sửa
+                </button>
+                <button (click)="deleteMedication(med)" title="Gỡ thuốc"
+                  class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 font-medium transition-all text-xs">
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL: THÊM / SỬA THUỐC MỚI -->
+  <div *ngIf="showModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
+    <div
+      class="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl border border-slate-100 space-y-6 animate-scale-up">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div>
+          <h3 class="text-xl font-black text-slate-900">
+            {{ modalMode === 'add' ? 'Khai Báo Dược Phẩm Mới' : 'Cập Nhật Thông Tin Dược Phẩm' }}
+          </h3>
+          <p class="text-xs font-medium text-slate-500 mt-0.5">
+            {{ modalMode === 'add' ? 'Bổ sung danh mục thuốc và vật tư vào kho trung tâm' : 'Chỉnh sửa thông số của ' + currentMedication.code }}
+          </p>
+        </div>
+        <button (click)="closeModal()"
+          class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-900 transition-colors">✕</button>
+      </div>
+
+      <div class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Mã Thuốc</label>
+            <input type="text" [(ngModel)]="currentMedication.code" disabled
+              class="w-full rounded-xl bg-slate-100 py-2.5 px-3 text-sm font-bold text-slate-500 border border-slate-200 cursor-not-allowed">
+          </div>
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Đơn vị tính</label>
+            <input type="text" [(ngModel)]="currentMedication.unit" placeholder="Viên, Chai, Hộp..."
+              class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm font-bold text-slate-800 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none transition-all">
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Tên thương mại <span
+              class="text-rose-500">*</span></label>
+          <input type="text" [(ngModel)]="currentMedication.name" placeholder="Ví dụ: Paracetamol 500mg"
+            class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm font-bold text-slate-900 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none transition-all">
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Hoạt chất / Thành phần <span
+              class="text-rose-500">*</span></label>
+          <input type="text" [(ngModel)]="currentMedication.ingredient" placeholder="Tên gốc hoạt chất..."
+            class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm font-medium text-slate-900 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none transition-all">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Số lượng tồn kho</label>
+            <input type="number" [(ngModel)]="currentMedication.quantity" placeholder="1000"
+              class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm font-black text-slate-900 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none transition-all text-right">
+          </div>
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Đơn giá (VNĐ)</label>
+            <input type="number" [(ngModel)]="currentMedication.price" placeholder="2000"
+              class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm font-black text-slate-900 border border-slate-200 focus:bg-white focus:border-amber-500 focus:outline-none transition-all text-right">
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+        <button (click)="closeModal()"
+          class="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all">Hủy</button>
+        <button (click)="saveMedication()"
+          class="px-6 py-2.5 rounded-xl bg-amber-500 text-white text-xs font-bold hover:bg-amber-600 transition-all shadow-md shadow-amber-500/10">
+          {{ modalMode === 'add' ? 'Lưu Thuốc' : 'Cập Nhật' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NHẬP KHO THÊM -->
+  <div *ngIf="showStockModal && selectedMedForStock"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
+    <div
+      class="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl border border-slate-100 space-y-5 animate-scale-up">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div>
+          <h3 class="text-base font-black text-slate-900">Nhập Thêm Số Lượng Kho</h3>
+          <p class="text-xs text-indigo-600 font-bold mt-0.5">{{ selectedMedForStock.name }}</p>
+        </div>
+        <button (click)="closeStockModal()"
+          class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-900 transition-colors">✕</button>
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex justify-between text-xs text-slate-500">
+          <span>Tồn kho hiện tại:</span>
+          <span class="font-bold text-slate-900">{{ selectedMedForStock.quantity | number }} {{ selectedMedForStock.unit
+            }}</span>
+        </div>
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Số lượng nạp thêm</label>
+          <input type="number" [(ngModel)]="addedQuantity" placeholder="500"
+            class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm font-black text-indigo-600 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none transition-all text-center text-lg">
+        </div>
+        <div class="flex justify-between text-xs text-slate-500 pt-1">
+          <span>Dự kiến sau nhập:</span>
+          <span class="font-black text-emerald-600">{{ (selectedMedForStock.quantity + (addedQuantity || 0)) | number }}
+            {{ selectedMedForStock.unit }}</span>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+        <button (click)="closeStockModal()"
+          class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all">Hủy</button>
+        <button (click)="submitStockIntake()"
+          class="px-5 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-all">Xác
+          nhận Nhập</button>
+      </div>
+    </div>
+  </div>
+</div>

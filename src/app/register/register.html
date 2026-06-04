@@ -1,0 +1,104 @@
+<div class="min-h-screen flex items-center justify-center p-4 md:p-8 font-sans bg-gradient-to-br from-[#111827] via-[#0B0F19] to-[#010409] overflow-y-auto">
+  
+  <div class="w-full max-w-5xl rounded-3xl shadow-[0_0_50px_-12px_rgba(0,0,0,0.25)] overflow-hidden flex flex-col md:flex-row bg-white" appCanvaReveal>
+
+    <!-- LEFT SIDE: FORM -->
+    <div class="w-full md:w-7/12 p-6 sm:p-10 md:p-12 lg:p-14 bg-white flex flex-col justify-center">
+      <div class="max-w-md w-full mx-auto">
+        <div class="flex items-center gap-3 mb-6">
+          <img src="Logo1.png" class="w-10 h-10 object-contain">
+          <span class="text-xl font-bold tracking-tight text-black">MediCare Central</span>
+        </div>
+        
+        <h3 class="text-2xl sm:text-3xl font-extrabold text-black tracking-tight mb-2">Tạo tài khoản mới</h3>
+        <p class="text-slate-500 mb-8 text-sm">Đăng ký tài khoản bệnh nhân để quản lý hồ sơ sức khỏe trực tuyến.</p>
+
+        <form class="space-y-4" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+          
+          <div class="space-y-1">
+            <label for="name" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Họ và tên</label>
+            <input formControlName="FullName" id="name" type="text" placeholder="Nguyễn Văn A"
+                   class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none transition-all duration-200 text-sm text-black">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label for="username" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Tên đăng nhập</label>
+              <input formControlName="UserName" id="username" type="text" placeholder="nguyenvana"
+                     class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none transition-all duration-200 text-sm text-black">
+            </div>
+            <div class="space-y-1">
+              <label for="password" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Mật khẩu</label>
+              <input formControlName="Password" type="password" id="password" placeholder="••••••••"
+                     class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none transition-all duration-200 text-sm text-black">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="sm:col-span-2 space-y-1">
+              <label for="email" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Email</label>
+              <input formControlName="Email" type="email" id="email" placeholder="example@mail.com"
+                     class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none transition-all duration-200 text-sm text-black">
+            </div>
+            <div class="space-y-1">
+              <label for="gender" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Giới tính</label>
+              <select formControlName="Gender" id="gender"
+                      class="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none transition-all duration-200 text-sm text-black">
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label for="date" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Ngày sinh</label>
+              <input formControlName="DateOfBirth" type="date" id="date"
+                     class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none transition-all duration-200 text-sm text-black">
+            </div>
+            <div class="space-y-1">
+              <label for="phone" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Số điện thoại</label>
+              <input formControlName="Phone" id="phone" type="text" placeholder="0912345678"
+                     class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none transition-all duration-200 text-sm text-black">
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <label for="address" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Địa chỉ</label>
+            <input formControlName="Address" id="address" type="text" placeholder="Hà Nội, Việt Nam"
+                   class="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 outline-none transition-all duration-200 text-sm text-black">
+          </div>
+
+          <div class="pt-4">
+            <button type="submit" 
+                    class="group relative w-full flex items-center justify-center px-8 py-3.5 font-bold text-white bg-black rounded-full overflow-hidden transition-all duration-300 hover:bg-gray-800 active:scale-[0.98] shadow-lg shadow-gray-200">
+              <span>Đăng Ký Tài Khoản</span>
+              <span class="inline-block transition-transform ease-out group-hover:translate-x-1 ml-2">&rarr;</span>
+            </button>
+          </div>
+          
+        </form>
+
+        <p class="text-center mt-6 text-sm text-slate-500">
+          Đã có tài khoản?
+          <a routerLink="/login" class="font-bold text-black hover:underline">Đăng nhập ngay</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE: WALLPAPER -->
+    <div class="hidden md:flex md:w-5/12 bg-black relative overflow-hidden">
+      <img src="Wallpaper_register.jpg" class="absolute inset-0 w-full h-full object-cover opacity-80">
+      <div class="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent"></div>
+      
+      <div class="absolute bottom-10 left-10 right-10 text-white z-10">
+        <h4 class="text-2xl font-black mb-2 tracking-tight">Kiến tạo tương lai y tế.</h4>
+        <p class="text-slate-300 text-xs leading-relaxed">
+          Tối ưu hóa các ca khám bệnh, theo dõi sức khỏe chủ động và cải thiện chất lượng sống mỗi ngày.
+        </p>
+      </div>
+    </div>
+
+  </div>
+  
+</div>

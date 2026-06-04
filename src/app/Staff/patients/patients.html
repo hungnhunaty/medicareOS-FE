@@ -1,0 +1,73 @@
+<div class="space-y-6 animate-fade-in">
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div>
+      <h2 class="text-2xl font-black text-slate-900 tracking-tight">Tra cứu Bệnh nhân</h2>
+      <p class="text-sm font-medium text-slate-500 mt-1">Danh sách toàn bộ bệnh nhân trên hệ thống.</p>
+    </div>
+  </div>
+
+  <!-- Search & Filter Card -->
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+    <div class="flex flex-col md:flex-row gap-4 items-center">
+      <div class="relative w-full">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+          <span class="text-slate-400">🔍</span>
+        </div>
+        <input type="text" [(ngModel)]="searchKeyword" (ngModelChange)="onSearch()"
+          placeholder="Tìm theo Mã bệnh nhân, ID, Tên, Số điện thoại..."
+          class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all font-medium placeholder:text-slate-400">
+      </div>
+      <button (click)="loadPatients()"
+        class="shrink-0 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all flex items-center gap-2">
+        <span [class.animate-spin]="isLoading">🔄</span> Làm mới
+      </button>
+    </div>
+  </div>
+
+  <!-- Table Card -->
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm whitespace-nowrap">
+        <thead
+          class="bg-slate-50/50 border-b border-slate-200 text-slate-500 uppercase text-[11px] font-black tracking-wider">
+          <tr>
+            <th class="px-6 py-4">UserId</th>
+            <th class="px-6 py-4">Mã Bệnh Nhân</th>
+            <th class="px-6 py-4">Họ và Tên</th>
+            <th class="px-6 py-4">Giới Tính</th>
+            <th class="px-6 py-4">Số Điện Thoại</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <tr *ngIf="isLoading">
+            <td colspan="5" class="px-6 py-12 text-center text-slate-500 font-medium">Đang tải dữ liệu bệnh nhân...</td>
+          </tr>
+          <tr *ngIf="!isLoading && filteredPatients.length === 0">
+            <td colspan="5" class="px-6 py-12 text-center text-slate-500 font-medium">Không tìm thấy bệnh nhân nào khớp
+              với "{{searchKeyword}}".</td>
+          </tr>
+          <tr *ngFor="let p of filteredPatients" class="hover:bg-slate-50/50 transition-colors group">
+            <td class="px-6 py-4">
+              <span
+                class="inline-flex items-center justify-center px-2 py-1 rounded-md bg-slate-100 text-slate-600 font-bold text-xs">
+                #{{p.userId}}
+              </span>
+            </td>
+            <td class="px-6 py-4 font-bold text-slate-900">{{p.id}}</td>
+            <td class="px-6 py-4">
+              <div class="font-bold text-slate-900">{{p.name}}</div>
+            </td>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold"
+                [ngClass]="p.gender === 'Nam' ? 'bg-sky-50 text-sky-700' : p.gender === 'Nữ' ? 'bg-pink-50 text-pink-700' : 'bg-slate-100 text-slate-700'">
+                {{p.gender}}
+              </span>
+            </td>
+            <td class="px-6 py-4 font-medium text-slate-600">{{p.phone}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

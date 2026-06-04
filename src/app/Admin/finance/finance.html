@@ -1,0 +1,318 @@
+<div class="space-y-6 animate-fade-in">
+  <!-- Title & Action Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-100">
+    <div>
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-black tracking-tight text-slate-900">Tài Chính & Kế Toán</h1>
+        <span class="px-2.5 py-0.5 rounded-full bg-violet-50 text-violet-700 text-xs font-bold border border-violet-100">
+          {{ filteredInvoices.length }} hóa đơn
+        </span>
+      </div>
+      <p class="text-sm font-medium text-slate-500 mt-1">Quản lý hóa đơn viện phí, theo dõi thanh toán và in biên lai chi tiết.</p>
+    </div>
+    <button (click)="openCreateModal()" class="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:from-violet-700 hover:to-indigo-700 transition-all shadow-md shadow-violet-500/10 flex items-center gap-2 shrink-0">
+      <span class="text-lg leading-none">+</span>
+      <span>Lập Hóa Đơn Mới</span>
+    </button>
+  </div>
+
+  <!-- Financial Summaries Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <!-- Revenue Card -->
+    <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-5 rounded-2xl shadow-sm relative overflow-hidden">
+      <div class="absolute right-0 top-0 h-32 w-32 bg-white/10 rounded-full blur-xl"></div>
+      <div class="relative z-10 flex items-center justify-between">
+        <div>
+          <p class="text-[11px] font-bold uppercase tracking-wider text-emerald-100">Tổng Đã Thu (Hôm nay)</p>
+          <h3 class="text-2xl font-black mt-1">{{ totalRevenue | number }}đ</h3>
+        </div>
+        <div class="p-3 bg-white/10 rounded-xl text-xl">💰</div>
+      </div>
+    </div>
+
+    <!-- Pending Receivables Card -->
+    <div class="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-5 rounded-2xl shadow-sm relative overflow-hidden">
+      <div class="absolute right-0 top-0 h-32 w-32 bg-white/10 rounded-full blur-xl"></div>
+      <div class="relative z-10 flex items-center justify-between">
+        <div>
+          <p class="text-[11px] font-bold uppercase tracking-wider text-amber-100">Công Nợ Chờ Thanh Toán</p>
+          <h3 class="text-2xl font-black mt-1">{{ pendingAmount | number }}đ</h3>
+        </div>
+        <div class="p-3 bg-white/10 rounded-xl text-xl">⏳</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search & Filter Card -->
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+    
+    <!-- Search keyword -->
+    <div class="relative w-full sm:w-80">
+      <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
+      <input type="text" [(ngModel)]="searchKeyword" placeholder="Tra cứu số HD, tên BN, mã BN..." 
+             class="w-full rounded-xl bg-slate-50 py-2.5 pl-10 pr-4 text-sm border border-slate-200 focus:bg-white focus:outline-none focus:border-violet-500 transition-all font-medium placeholder:text-slate-400">
+    </div>
+
+    <!-- Status filter -->
+    <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+      <span class="text-xs font-bold text-slate-400 uppercase tracking-wider hidden md:inline">Trạng thái:</span>
+      <select [(ngModel)]="filterStatus" class="w-full sm:w-auto rounded-xl bg-slate-50 py-2.5 px-4 text-sm border border-slate-200 focus:bg-white focus:outline-none focus:border-violet-500 font-semibold text-slate-700 transition-all">
+        <option value="Tất cả trạng thái">Tất cả trạng thái</option>
+        <option value="Đã thanh toán">Đã thanh toán</option>
+        <option value="Chờ thanh toán">Chờ thanh toán</option>
+        <option value="Đã hủy">Đã hủy</option>
+      </select>
+      <button *ngIf="searchKeyword || filterStatus !== 'Tất cả trạng thái'" 
+              (click)="searchKeyword = ''; filterStatus = 'Tất cả trạng thái'"
+              class="px-3 py-2 text-xs font-bold text-violet-600 hover:bg-violet-50 rounded-lg transition-all shrink-0">
+        Xóa lọc
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Invoices Table Card -->
+  <div class="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-xs">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm whitespace-nowrap">
+        <thead class="bg-slate-50/75 text-slate-400 border-b border-slate-100 uppercase text-[10px] tracking-wider font-bold">
+          <tr>
+            <th class="px-6 py-4">Số Hóa Đơn</th>
+            <th class="px-6 py-4">Bệnh Nhân</th>
+            <th class="px-6 py-4">Thời gian</th>
+            <th class="px-6 py-4 text-right">Tổng thanh toán</th>
+            <th class="px-6 py-4">Hình thức</th>
+            <th class="px-6 py-4 text-center">Trạng thái</th>
+            <th class="px-6 py-4 text-right">Xử lý / Tác vụ</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100/60">
+          <tr *ngIf="filteredInvoices.length === 0">
+            <td colspan="7" class="px-6 py-12 text-center text-slate-400 font-medium">
+              Không tìm thấy chứng từ/hóa đơn nào khớp với bộ lọc tra cứu.
+            </td>
+          </tr>
+          <tr *ngFor="let inv of filteredInvoices" class="hover:bg-slate-50/50 transition-all group" [ngClass]="inv.status === 'Đã hủy' ? 'opacity-60' : ''">
+            <td class="px-6 py-4 font-black text-violet-600">{{ inv.invoiceId }}</td>
+            <td class="px-6 py-4">
+              <p class="font-bold text-slate-900 group-hover:text-violet-600 transition-colors">{{ inv.patientName }}</p>
+              <p class="text-[11px] text-slate-400 font-medium">{{ inv.patientCode }}</p>
+            </td>
+            <td class="px-6 py-4 text-xs font-medium text-slate-500">{{ inv.date }}</td>
+            <td class="px-6 py-4 font-black text-slate-900 text-right text-base tracking-tight">
+              {{ inv.total | number }}đ
+            </td>
+            <td class="px-6 py-4 font-semibold text-slate-700 text-xs">
+              <span class="bg-slate-50 border border-slate-100 px-2 py-1 rounded-md">{{ inv.method }}</span>
+            </td>
+            <td class="px-6 py-4 text-center">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold border"
+                    [ngClass]="{
+                      'bg-emerald-50 text-emerald-700 border-emerald-200': inv.status === 'Đã thanh toán',
+                      'bg-amber-50 text-amber-700 border-amber-200 animate-pulse': inv.status === 'Chờ thanh toán',
+                      'bg-slate-50 text-slate-400 border-slate-200': inv.status === 'Đã hủy'
+                    }">
+                {{ inv.status }}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <div class="flex items-center justify-end gap-1.5">
+                
+                <!-- Nút xác nhận thanh toán nhanh nếu đang Chờ thanh toán -->
+                <div *ngIf="inv.status === 'Chờ thanh toán'" class="inline-flex rounded-lg border border-slate-200 p-0.5 bg-slate-50 mr-2">
+                  <span class="px-1 text-[10px] text-slate-400 font-bold self-center hidden lg:inline">Xác nhận:</span>
+                  <button (click)="confirmPayment(inv, 'Tiền mặt')" class="px-2 py-0.5 text-[10px] font-bold text-slate-600 hover:bg-white hover:shadow-2xs rounded transition-all">TM</button>
+                  <button (click)="confirmPayment(inv, 'Chuyển khoản')" class="px-2 py-0.5 text-[10px] font-bold text-slate-600 hover:bg-white hover:shadow-2xs rounded transition-all">CK</button>
+                  <button (click)="confirmPayment(inv, 'Quẹt thẻ')" class="px-2 py-0.5 text-[10px] font-bold text-slate-600 hover:bg-white hover:shadow-2xs rounded transition-all">POS</button>
+                </div>
+
+                <!-- Xem/In biên lai -->
+                <button (click)="openReceiptModal(inv)" class="px-2.5 py-1 rounded-lg bg-violet-50 hover:bg-violet-100 text-violet-700 font-bold text-xs transition-all border border-violet-100" title="Xem & In Biên Lai">
+                  🖨️ In
+                </button>
+
+                <!-- Hủy hóa đơn -->
+                <button *ngIf="inv.status !== 'Đã hủy'" (click)="cancelInvoice(inv)" title="Hủy hóa đơn" class="p-1 text-slate-400 hover:text-rose-600 transition-colors">
+                  ✕
+                </button>
+
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL: LẬP HÓA ĐƠN MỚI -->
+  <div *ngIf="showCreateModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
+    <div class="bg-white rounded-3xl p-6 md:p-8 max-w-xl w-full shadow-2xl border border-slate-100 space-y-6 max-h-[90vh] flex flex-col animate-scale-up">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
+        <div>
+          <h3 class="text-xl font-black text-slate-900">Lập Hóa Đơn Viện Phí Mới</h3>
+          <p class="text-xs font-medium text-slate-500 mt-0.5">Thêm chi tiết các mục dịch vụ y tế để xuất hóa đơn</p>
+        </div>
+        <button (click)="closeCreateModal()" class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-900 transition-colors">✕</button>
+      </div>
+
+      <!-- Scrollable Form Inputs -->
+      <div class="overflow-y-auto flex-1 space-y-4 pr-1">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Mã bệnh nhân (Patient Code) <span class="text-rose-500">*</span></label>
+            <div class="flex gap-2">
+              <input type="text" [(ngModel)]="newInvoice.patientCode" placeholder="Ví dụ: BN-001..." (keyup.enter)="lookupPatientFees()"
+                     class="flex-1 rounded-xl bg-slate-50 py-2.5 px-3 text-sm font-bold text-slate-800 border border-slate-200 focus:bg-white focus:border-violet-500 focus:outline-none transition-all uppercase">
+              <button type="button" (click)="lookupPatientFees()"
+                      class="px-3.5 py-2.5 rounded-xl bg-violet-100 hover:bg-violet-200 text-violet-700 text-xs font-black transition-all shrink-0 flex items-center gap-1.5 shadow-xs border border-violet-200/50">
+                <span>🔍 Tra cứu</span>
+              </button>
+            </div>
+          </div>
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Tên bệnh nhân thanh toán</label>
+            <input type="text" [(ngModel)]="newInvoice.patientName" placeholder="Tự động điền sau khi tra cứu..." disabled
+                   class="w-full rounded-xl bg-slate-100 py-2.5 px-3 text-sm font-black text-slate-500 border border-slate-200 cursor-not-allowed">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Trạng thái thanh toán</label>
+            <select [(ngModel)]="newInvoice.status" class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm font-bold text-slate-800 border border-slate-200 focus:bg-white focus:border-violet-500 focus:outline-none transition-all">
+              <option value="Đã thanh toán">Đã thanh toán ngay</option>
+              <option value="Chờ thanh toán">Chờ thanh toán</option>
+            </select>
+          </div>
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Hình thức</label>
+            <select [(ngModel)]="newInvoice.method" class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm font-semibold text-slate-800 border border-slate-200 focus:bg-white focus:border-violet-500 focus:outline-none transition-all">
+              <option value="Tiền mặt">Tiền mặt</option>
+              <option value="Chuyển khoản">Chuyển khoản</option>
+              <option value="Quẹt thẻ">Quẹt thẻ máy POS</option>
+              <option value="Chưa chọn">Chưa xác định</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Chi tiết các danh mục dịch vụ -->
+        <div class="space-y-2.5 pt-2 border-t border-slate-100">
+          <div class="flex items-center justify-between">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Các mục thanh toán</label>
+            <button (click)="addItemRow()" class="text-xs font-bold text-violet-600 hover:underline flex items-center gap-1">
+              <span>+ Thêm mục</span>
+            </button>
+          </div>
+
+          <div *ngFor="let it of newInvoice.items; let i = index" class="flex items-center gap-2">
+            <div class="flex-1 relative">
+              <input type="text" [(ngModel)]="it.name" [attr.list]="'services-list-' + i" (change)="onServiceInputChange(i)" 
+                     placeholder="Gõ hoặc click chọn dịch vụ y tế..." 
+                     class="w-full rounded-lg bg-slate-50 py-2 px-2.5 text-xs font-medium border border-slate-200 focus:bg-white focus:border-violet-500 focus:outline-none">
+              
+              <datalist [id]="'services-list-' + i">
+                <option *ngFor="let s of availableServices" [value]="s.name">
+                  Đơn giá: {{ s.currentPrice | number }}đ
+                </option>
+              </datalist>
+            </div>
+            
+            <input type="number" [(ngModel)]="it.quantity" placeholder="SL" min="1" class="w-16 rounded-lg bg-slate-50 py-2 px-2 text-xs font-bold border border-slate-200 text-center focus:bg-white focus:border-violet-500 focus:outline-none">
+            <input type="number" [(ngModel)]="it.unitPrice" placeholder="Đơn giá..." min="0" class="w-28 rounded-lg bg-slate-50 py-2 px-2 text-xs font-bold border border-slate-200 text-right focus:bg-white focus:border-violet-500 focus:outline-none">
+            <button (click)="removeItemRow(i)" [disabled]="newInvoice.items.length <= 1" class="p-1 text-slate-300 hover:text-rose-500 disabled:opacity-30 transition-colors">🗑️</button>
+          </div>
+
+          <div class="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100 mt-2">
+            <span class="text-xs font-bold text-slate-500 uppercase">Tổng tạm tính:</span>
+            <span class="text-base font-black text-violet-600">{{ newInvoiceTotalCalc | number }}đ</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 shrink-0">
+        <button (click)="closeCreateModal()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all">Hủy</button>
+        <button (click)="saveNewInvoice()" class="px-6 py-2.5 rounded-xl bg-violet-600 text-white text-xs font-bold hover:bg-violet-700 transition-all shadow-md shadow-violet-500/10">Xuất Hóa Đơn</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: XEM / IN BIÊN LAI -->
+  <div *ngIf="showReceiptModal && selectedInvoice" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
+    <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-6 max-h-[90vh] flex flex-col animate-scale-up">
+      
+      <!-- Vùng Biên lai để in -->
+      <div class="space-y-4 border-b border-dashed border-slate-200 pb-4">
+        <!-- Tên BV -->
+        <div class="text-center space-y-0.5">
+          <h4 class="text-base font-black text-slate-900 tracking-tight uppercase">BỆNH VIỆN ĐA KHOA MEDICARE</h4>
+          <p class="text-[10px] text-slate-500">123 Nguyễn Văn Linh, Quận 7, TP. Hồ Chí Minh</p>
+          <p class="text-[10px] text-slate-500">Hotline: 1900 8888 - Website: medicare.vn</p>
+          
+          <div class="pt-3">
+            <h3 class="text-lg font-bold text-slate-900 uppercase">BIÊN LAI THU TIỀN VIỆN PHÍ</h3>
+            <p class="text-[11px] font-mono font-bold text-slate-600 mt-0.5">{{ selectedInvoice.invoiceId }}</p>
+          </div>
+        </div>
+
+        <!-- Thông tin BN -->
+        <div class="text-xs space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-100">
+          <p><span class="text-slate-400">Bệnh nhân:</span> <span class="font-bold text-slate-900">{{ selectedInvoice.patientName }}</span></p>
+          <p><span class="text-slate-400">Mã bệnh án:</span> <span class="font-semibold text-slate-700">{{ selectedInvoice.patientCode }}</span></p>
+          <p><span class="text-slate-400">Ngày xuất:</span> <span class="text-slate-700">{{ selectedInvoice.date }}</span></p>
+          <p><span class="text-slate-400">Phương thức:</span> <span class="font-bold text-slate-800">{{ selectedInvoice.method }}</span></p>
+        </div>
+
+        <!-- Bảng chi tiết -->
+        <div>
+          <table class="w-full text-xs">
+            <thead class="border-b border-slate-200 text-slate-400 font-bold text-[10px] uppercase text-left">
+              <tr>
+                <th class="pb-1.5">Tên dịch vụ</th>
+                <th class="pb-1.5 text-center">SL</th>
+                <th class="pb-1.5 text-right">Thành tiền</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr *ngFor="let it of selectedInvoice.items">
+                <td class="py-2 pr-2 font-medium text-slate-800">{{ it.name }}</td>
+                <td class="py-2 text-center text-slate-600">{{ it.quantity }}</td>
+                <td class="py-2 text-right font-bold text-slate-900">{{ (it.quantity * it.unitPrice) | number }}đ</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Tổng cộng -->
+        <div class="pt-3 border-t border-slate-200 flex justify-between items-baseline">
+          <span class="text-xs font-bold text-slate-500 uppercase">Tổng thanh toán:</span>
+          <span class="text-xl font-black text-slate-900">{{ selectedInvoice.total | number }}đ</span>
+        </div>
+
+        <div class="text-center pt-2">
+          <span class="inline-block px-3 py-0.5 rounded-full text-[10px] font-bold"
+                [ngClass]="selectedInvoice.status === 'Đã thanh toán' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'">
+            {{ selectedInvoice.status }}
+          </span>
+          <p class="text-[9px] text-slate-400 italic mt-2">Cảm ơn Quý khách đã tin tưởng dịch vụ của MediCare!</p>
+        </div>
+
+      </div>
+
+      <!-- Action Footer -->
+      <div class="flex items-center justify-end gap-3 pt-2 shrink-0">
+        <button (click)="closeReceiptModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all">Đóng</button>
+        <button (click)="printReceipt()" class="px-5 py-2 rounded-xl bg-violet-600 text-white text-xs font-bold hover:bg-violet-700 transition-all shadow-md shadow-violet-500/10 flex items-center gap-1.5">
+          <span>🖨️</span>
+          <span>In Ngay</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

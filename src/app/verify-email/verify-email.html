@@ -1,0 +1,51 @@
+<div class="min-h-screen flex items-center justify-center p-6 font-sans bg-gradient-to-br from-[#111827] via-[#0B0F19] to-[#010409]">
+  <div class="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden p-8 md:p-12 text-center">
+    
+    <div class="flex justify-center mb-6">
+      <div class="w-16 h-16 bg-teal-50 rounded-full flex items-center justify-center text-3xl">
+        🩺
+      </div>
+    </div>
+
+    <h2 class="text-2xl font-bold text-black mb-4">Medicare</h2>
+
+    <!-- LOADING STATE -->
+    <div *ngIf="loading" class="space-y-4">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-teal-600 border-t-transparent border-r-transparent border-b-transparent border-l-transparent"></div>
+      <p class="text-gray-500 text-sm">Đang xác thực tài khoản của bạn, vui lòng đợi...</p>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div *ngIf="!loading && success" class="space-y-6">
+      <div class="flex justify-center">
+        <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 text-xl font-bold">
+          ✓
+        </div>
+      </div>
+      <div class="space-y-2">
+        <h3 class="text-xl font-bold text-emerald-600">Kích Hoạt Thành Công!</h3>
+        <p class="text-gray-500 text-sm">Tài khoản của bạn đã được kích hoạt thành công. Bạn đã có thể đăng nhập ngay bây giờ.</p>
+      </div>
+      <button routerLink="/login" class="w-full py-3.5 font-bold text-white bg-black hover:bg-gray-800 rounded-full transition-colors">
+        Đăng nhập ngay
+      </button>
+    </div>
+
+    <!-- FAILURE STATE -->
+    <div *ngIf="!loading && !success" class="space-y-6">
+      <div class="flex justify-center">
+        <div class="w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center text-rose-600 text-xl font-bold">
+          ✕
+        </div>
+      </div>
+      <div class="space-y-2">
+        <h3 class="text-xl font-bold text-rose-600">Xác thực thất bại</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">{{ errorMessage }}</p>
+      </div>
+      <button routerLink="/login" class="w-full py-3.5 font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors">
+        Quay lại Đăng nhập
+      </button>
+    </div>
+
+  </div>
+</div>

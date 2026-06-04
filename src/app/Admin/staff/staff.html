@@ -1,0 +1,260 @@
+<div class="space-y-6 animate-fade-in">
+  <!-- Title & Action Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-100">
+    <div>
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-black tracking-tight text-slate-900">Nhân sự & Bác sĩ</h1>
+        <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200">
+          {{ filteredStaffList.length }} nhân viên
+        </span>
+      </div>
+      <p class="text-sm font-medium text-slate-500 mt-1">Quản lý hồ sơ, phân quyền và trạng thái công tác của y bác sĩ
+        MediCare.</p>
+    </div>
+    <button (click)="openAddModal()"
+      class="flex items-center gap-2 bg-gradient-to-r from-slate-900 to-slate-800 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:from-slate-800 hover:to-slate-700 transition-all shadow-md shadow-slate-900/10 shrink-0">
+      <span class="text-lg leading-none">+</span>
+      <span>Thêm Nhân Sự</span>
+    </button>
+  </div>
+
+  <!-- Search & Filter Controls -->
+  <div
+    class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+
+    <!-- Search keyword -->
+    <div class="relative w-full sm:w-80">
+      <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
+      <input type="text" [(ngModel)]="searchKeyword" placeholder="Tìm tên, mã nhân viên, email..."
+        class="w-full rounded-xl bg-slate-50 py-2.5 pl-10 pr-4 text-sm border border-slate-200 focus:bg-white focus:outline-none focus:border-indigo-500 transition-all font-medium placeholder:text-slate-400">
+    </div>
+
+    <!-- Filter select -->
+    <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+      <span class="text-xs font-bold text-slate-400 uppercase tracking-wider hidden md:inline">Bộ lọc:</span>
+      <select [(ngModel)]="selectedDepartment"
+        class="w-full sm:w-auto rounded-xl bg-slate-50 py-2.5 px-4 text-sm border border-slate-200 focus:bg-white focus:outline-none focus:border-indigo-500 font-semibold text-slate-700 transition-all">
+        <option value="Tất cả phòng ban">Tất cả phòng ban</option>
+        <option value="Khoa Khám bệnh">Khoa Khám bệnh</option>
+        <option value="Khoa Nội Tổng Hợp">Khoa Nội Tổng Hợp</option>
+        <option value="Khoa Ngoại Tổng Hợp">Khoa Ngoại Tổng Hợp</option>
+        <option value="Khoa Nhi">Khoa Nhi</option>
+        <option value="Khoa Xét nghiệm">Khoa Xét nghiệm</option>
+        <option value="Khoa Chẩn Đoán Hình Ảnh">Khoa Chẩn Đoán Hình Ảnh</option>
+      </select>
+      <button *ngIf="searchKeyword || selectedDepartment !== 'Tất cả phòng ban'"
+        (click)="searchKeyword = ''; selectedDepartment = 'Tất cả phòng ban'"
+        class="px-3 py-2 text-xs font-bold text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all shrink-0">
+        Xóa lọc
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Staff List Table Card -->
+  <div class="bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm whitespace-nowrap">
+        <thead
+          class="bg-slate-50/75 text-slate-400 border-b border-slate-100 uppercase text-[10px] tracking-wider font-bold">
+          <tr>
+            <th class="px-6 py-4">Mã NV</th>
+            <th class="px-6 py-4">Thông tin nhân sự</th>
+            <th class="px-6 py-4">Vai trò</th>
+            <th class="px-6 py-4">Phòng ban</th>
+            <th class="px-6 py-4 text-center">Trạng thái</th>
+            <th class="px-6 py-4 text-right">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100/60">
+          <tr *ngIf="filteredStaffList.length === 0">
+            <td colspan="6" class="px-6 py-12 text-center text-slate-400 font-medium">
+              Không tìm thấy nhân sự nào phù hợp với điều kiện lọc.
+            </td>
+          </tr>
+          <tr *ngFor="let staff of filteredStaffList" class="hover:bg-slate-50/50 transition-all group">
+            <td class="px-6 py-4 font-bold text-slate-900">{{ staff.code }}</td>
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div
+                  class="h-10 w-10 rounded-xl bg-gradient-to-tr from-slate-100 to-slate-200 flex items-center justify-center text-slate-800 font-black border border-slate-200 shadow-2xs shrink-0">
+                  {{ staff.name.charAt(staff.name.indexOf('.') + 2) || staff.name.charAt(0) }}
+                </div>
+                <div>
+                  <p class="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{{ staff.name }}</p>
+                  <p class="text-[10px] font-black text-indigo-500 tracking-tighter">Username: {{
+                    staff.userName }}</p>
+                  <div class="flex items-center gap-2 mt-0.5">
+                    <span class="text-xs text-slate-400">{{ staff.email }}</span>
+                    <span class="text-[10px] text-slate-300">•</span>
+                    <span class="text-xs text-slate-500 font-medium">{{ staff.phone }}</span>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <span
+                class="font-semibold text-slate-700 bg-slate-50 border border-slate-100 px-2.5 py-1 rounded-lg text-xs">{{
+                staff.role }}</span>
+            </td>
+            <td class="px-6 py-4 font-medium text-slate-600">{{ staff.department }}</td>
+            <td class="px-6 py-4 text-center">
+              <button (click)="toggleStatus(staff)" title="Click để đổi trạng thái"
+                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border transition-all cursor-pointer shadow-2xs"
+                [ngClass]="{
+                        'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100': staff.status === 'Hoạt động',
+                        'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100': staff.status === 'Nghỉ phép',
+                        'bg-rose-50 text-rose-600 border-rose-200 hover:bg-rose-100': staff.status === 'Đã khóa'
+                      }">
+                <span class="h-1.5 w-1.5 rounded-full mr-1.5" [ngClass]="{
+                        'bg-emerald-500 animate-pulse': staff.status === 'Hoạt động',
+                        'bg-amber-500': staff.status === 'Nghỉ phép',
+                        'bg-rose-500': staff.status === 'Đã khóa'
+                      }"></span>
+                {{ staff.status }}
+              </button>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <div class="flex items-center justify-end gap-1">
+                <button (click)="openEditModal(staff)"
+                  class="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 font-medium transition-all"
+                  title="Chỉnh sửa">
+                  ✏️
+                </button>
+                <button (click)="deleteStaff(staff)"
+                  class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 font-medium transition-all"
+                  title="Xóa nhân viên">
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL: THÊM / SỬA NHÂN SỰ -->
+  <div *ngIf="showModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
+    <div
+      class="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl border border-slate-100 space-y-6 animate-scale-up">
+
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div>
+          <h3 class="text-xl font-black text-slate-900">
+            {{ modalMode === 'add' ? 'Thêm Hồ Sơ Nhân Sự' : 'Cập Nhật Nhân Sự' }}
+          </h3>
+          <p class="text-xs font-medium text-slate-500 mt-0.5">
+            {{ modalMode === 'add' ? 'Khai báo thông tin nhân viên mới vào hệ thống' : 'Chỉnh sửa dữ liệu của ' +
+            currentStaff.code }}
+          </p>
+        </div>
+        <button (click)="closeModal()"
+          class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-900 transition-colors">✕</button>
+      </div>
+
+      <!-- Modal Form Content -->
+      <div class="space-y-4">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" *ngIf="modalMode === 'add'">
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Tên đăng nhập <span
+                class="text-rose-500">*</span></label>
+            <input type="text" [(ngModel)]="currentStaff.userName" placeholder="Ví dụ: nva01"
+              class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none transition-all font-bold text-slate-900">
+          </div>
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Mật khẩu khởi tạo <span
+                class="text-rose-500">*</span></label>
+            <input type="text" [(ngModel)]="currentStaff.password" placeholder="Mặc định: staff123"
+              class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none transition-all font-bold text-slate-900">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1.5" *ngIf="modalMode === 'edit'">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Mã Nhân Sự</label>
+            <input type="text" [(ngModel)]="currentStaff.code" disabled
+              class="w-full rounded-xl bg-slate-100 py-2.5 px-3 text-sm border border-slate-200 font-bold text-slate-500 cursor-not-allowed">
+          </div>
+          <div *ngIf="modalMode === 'edit'" class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Đặt lại mật khẩu</label>
+            <input type="text" [(ngModel)]="currentStaff.password" placeholder="Nhập mật khẩu mới nếu muốn đổi"
+              class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none transition-all font-bold text-slate-900">
+          </div>
+          <div class="space-y-1.5 flex flex-col" [ngClass]="{'col-span-2': modalMode === 'add'}">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Trạng thái tài khoản</label>
+            <select [(ngModel)]="currentStaff.status"
+              class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none transition-all font-bold text-slate-800">
+              <option value="Hoạt động">Hoạt động</option>
+              <option value="Nghỉ phép">Nghỉ phép</option>
+              <option value="Đã khóa">Đã khóa</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Họ và tên học hàm/chức danh
+            <span class="text-rose-500">*</span></label>
+          <input type="text" [(ngModel)]="currentStaff.name" placeholder="Ví dụ: TS.BS. Nguyễn Văn A"
+            class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-50 transition-all font-semibold text-slate-900">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Email liên hệ <span
+                class="text-rose-500">*</span></label>
+            <input type="email" [(ngModel)]="currentStaff.email" placeholder="name@medicare.com"
+              class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-50 transition-all font-medium text-slate-900">
+          </div>
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Số điện thoại</label>
+            <input type="text" [(ngModel)]="currentStaff.phone" placeholder="09xx..."
+              class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-50 transition-all font-medium text-slate-900">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Vai trò chuyên môn</label>
+            <select [(ngModel)]="currentStaff.role"
+              class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none transition-all font-semibold text-slate-800">
+              <option value="Bác sĩ">Bác sĩ</option>
+              <option value="Nhân viên kho thuốc">Nhân viên kho thuốc</option>
+              <option value="Lễ tân">Lễ tân</option>
+              <option value="Y tá">Y tá</option>
+            </select>
+          </div>
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Phòng / Khoa trực
+              thuộc</label>
+            <select [(ngModel)]="currentStaff.department"
+              class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none transition-all font-semibold text-slate-800">
+              <option value="Khoa Khám bệnh">Khoa Khám bệnh</option>
+              <option value="Khoa Nội Tổng Hợp">Khoa Nội Tổng Hợp</option>
+              <option value="Khoa Ngoại Tổng Hợp">Khoa Ngoại Tổng Hợp</option>
+              <option value="Khoa Nhi">Khoa Nhi</option>
+              <option value="Khoa Xét nghiệm">Khoa Xét nghiệm</option>
+              <option value="Khoa Chẩn Đoán Hình Ảnh">Khoa Chẩn Đoán Hình Ảnh</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+        <button (click)="closeModal()"
+          class="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all">Hủy
+          bỏ</button>
+        <button (click)="saveStaff()"
+          class="px-6 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-all shadow-md shadow-slate-900/10">
+          {{ modalMode === 'add' ? 'Hoàn tất Thêm' : 'Lưu Thay Đổi' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,332 @@
+<div class="space-y-8 animate-fade-in">
+  <!-- Top Greeting & Quick Actions -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-black tracking-tight text-slate-900 leading-tight">Bảng điều khiển</h1>
+      <p class="text-sm font-medium text-slate-500 mt-0.5">Chào mừng trở lại, Admin. Dưới đây là tình hình hoạt động
+        trực tiếp của MediCare hôm nay.</p>
+    </div>
+    <div class="flex flex-wrap items-center gap-3">
+      <button (click)="exportReport()"
+        class="bg-white border border-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-50 hover:border-slate-300 transition-all shadow-xs flex items-center gap-2">
+        <span>📥</span>
+        <span>Xuất báo cáo</span>
+      </button>
+      <button (click)="openAddQueueModal()"
+        class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:from-indigo-700 hover:to-violet-700 transition-all shadow-md shadow-indigo-500/20 flex items-center gap-2">
+        <span class="text-lg leading-none">+</span>
+        <span>Ca khám khẩn cấp</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Metrics Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+
+    <!-- Card 1 -->
+    <div
+      class="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs relative overflow-hidden group hover:border-indigo-100 transition-all">
+      <div
+        class="absolute top-0 right-0 h-24 w-24 bg-gradient-to-bl from-indigo-50 to-transparent rounded-bl-full z-0 opacity-50 group-hover:opacity-100 transition-opacity">
+      </div>
+      <div class="relative z-10">
+        <div class="flex items-center justify-between">
+          <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tổng bệnh nhân</p>
+          <span class="p-2 rounded-lg bg-indigo-50 text-indigo-600 text-base leading-none">👥</span>
+        </div>
+        <div class="flex items-baseline justify-between mt-4">
+          <h3 class="text-3xl font-black text-slate-900 tracking-tight">{{ todayStats.totalPatients }}</h3>
+          <span
+            class="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md flex items-center gap-0.5">
+            <span>↑</span> 12%
+          </span>
+        </div>
+        <p class="text-[10px] text-slate-400 mt-1">So với hôm qua</p>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div
+      class="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs relative overflow-hidden group hover:border-amber-100 transition-all">
+      <div
+        class="absolute top-0 right-0 h-24 w-24 bg-gradient-to-bl from-amber-50 to-transparent rounded-bl-full z-0 opacity-50 group-hover:opacity-100 transition-opacity">
+      </div>
+      <div class="relative z-10">
+        <div class="flex items-center justify-between">
+          <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Đang chờ khám</p>
+          <span class="p-2 rounded-lg bg-amber-50 text-amber-600 text-base leading-none">⏳</span>
+        </div>
+        <div class="flex items-baseline justify-between mt-4">
+          <h3 class="text-3xl font-black text-slate-900 tracking-tight">{{ todayStats.waitingQueues }}</h3>
+          <span
+            class="text-[10px] font-bold text-white bg-amber-500 px-2 py-0.5 rounded-md shadow-xs shadow-amber-500/20 animate-pulse">
+            Live
+          </span>
+        </div>
+        <p class="text-[10px] text-slate-400 mt-1">Cập nhật tức thì</p>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div
+      class="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs relative overflow-hidden group hover:border-emerald-100 transition-all">
+      <div
+        class="absolute top-0 right-0 h-24 w-24 bg-gradient-to-bl from-emerald-50 to-transparent rounded-bl-full z-0 opacity-50 group-hover:opacity-100 transition-opacity">
+      </div>
+      <div class="relative z-10">
+        <div class="flex items-center justify-between">
+          <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Ca hoàn thành</p>
+          <span class="p-2 rounded-lg bg-emerald-50 text-emerald-600 text-base leading-none">✅</span>
+        </div>
+        <div class="flex items-baseline justify-between mt-4">
+          <h3 class="text-3xl font-black text-slate-900 tracking-tight">{{ todayStats.completedExaminations }}</h3>
+          <span class="text-[11px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">
+            86%
+          </span>
+        </div>
+        <p class="text-[10px] text-slate-400 mt-1">Hiệu suất khám bệnh</p>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div
+      class="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs relative overflow-hidden group hover:border-violet-100 transition-all">
+      <div
+        class="absolute top-0 right-0 h-24 w-24 bg-gradient-to-bl from-violet-50 to-transparent rounded-bl-full z-0 opacity-50 group-hover:opacity-100 transition-opacity">
+      </div>
+      <div class="relative z-10">
+        <div class="flex items-center justify-between">
+          <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Doanh thu ngày</p>
+          <span class="p-2 rounded-lg bg-violet-50 text-violet-600 text-base leading-none">💰</span>
+        </div>
+        <div class="flex items-baseline justify-between mt-4">
+          <h3 class="text-2xl font-black text-slate-900 tracking-tight">{{ formatCurrency(todayStats.todayRevenue) }}
+          </h3>
+          <span class="text-[11px] font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded-md">
+            ↑ 5%
+          </span>
+        </div>
+        <p class="text-[10px] text-slate-400 mt-1">Đã tính chuyển khoản & TM</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Main Active Area (2/3 Left Queues, 1/3 Right Distribution) -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <!-- Real-time Queues Table -->
+    <div class="lg:col-span-2 space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <h2 class="text-base font-black tracking-tight text-slate-900 uppercase">Hàng đợi trực tiếp</h2>
+          <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
+        </div>
+        <div class="flex items-center gap-3">
+          <select [(ngModel)]="selectedDepartment" class="text-xs font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 outline-none focus:border-indigo-500 transition-colors cursor-pointer">
+            <option value="Tất cả Khoa">Tất cả Khoa</option>
+            <option *ngFor="let dept of departmentStats" [value]="dept.name">{{ dept.name }}</option>
+          </select>
+          <span class="text-xs font-medium text-slate-400">Click trạng thái để đổi</span>
+        </div>
+      </div>
+
+      <div class="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-xs">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm whitespace-nowrap">
+            <thead class="bg-slate-50/75 border-b border-slate-100">
+              <tr>
+                <th class="px-6 py-3.5 font-bold text-slate-400 uppercase text-[10px] tracking-wider">STT / Thời gian
+                </th>
+                <th class="px-6 py-3.5 font-bold text-slate-400 uppercase text-[10px] tracking-wider">Bệnh nhân</th>
+                <th class="px-6 py-3.5 font-bold text-slate-400 uppercase text-[10px] tracking-wider">Phòng / Khoa</th>
+                <th class="px-6 py-3.5 font-bold text-slate-400 uppercase text-[10px] tracking-wider">Trạng thái</th>
+                <th class="px-6 py-3.5 font-bold text-slate-400 uppercase text-[10px] tracking-wider text-right">Chuyển
+                  trạng thái</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100/60">
+              <tr *ngFor="let q of filteredQueues" class="hover:bg-slate-50/50 transition-all">
+                <td class="px-6 py-4">
+                  <div class="flex items-center gap-2">
+                    <span class="font-black text-slate-900 bg-slate-100/80 px-2 py-0.5 rounded-md text-xs">{{
+                      q.queueNumber }}</span>
+                    <span class="text-xs font-medium text-slate-400">{{ q.time }}</span>
+                  </div>
+                </td>
+                <td class="px-6 py-4 font-bold text-slate-800">{{ q.patientName }}</td>
+                <td class="px-6 py-4 text-slate-600 font-medium text-xs">
+                  <span class="px-2 py-1 rounded-md bg-slate-50 text-slate-600 border border-slate-100">{{ q.department
+                    }}</span>
+                </td>
+                <td class="px-6 py-4">
+                  <span *ngIf="q.status === 'Đang khám'"
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100 animate-pulse">
+                    <span class="h-1.5 w-1.5 rounded-full bg-indigo-600 animate-ping"></span>
+                    Đang khám
+                  </span>
+                  <span *ngIf="q.status === 'Đang chờ'"
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-100">
+                    <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+                    Đang chờ
+                  </span>
+                  <span *ngIf="q.status === 'Hoàn thành'"
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                    Hoàn thành
+                  </span>
+                </td>
+                <td class="px-6 py-4 text-right">
+                  <div class="inline-flex rounded-lg border border-slate-200 p-0.5 bg-slate-50">
+                    <button (click)="updateQueueStatus(q, 'Đang chờ')"
+                      [ngClass]="q.status === 'Đang chờ' ? 'bg-white shadow-xs text-slate-900 font-bold' : 'text-slate-400 hover:text-slate-900'"
+                      class="px-2 py-1 text-[11px] rounded-md transition-all font-medium">Chờ</button>
+                    <button (click)="updateQueueStatus(q, 'Đang khám')"
+                      [ngClass]="q.status === 'Đang khám' ? 'bg-white shadow-xs text-indigo-600 font-bold' : 'text-slate-400 hover:text-slate-900'"
+                      class="px-2 py-1 text-[11px] rounded-md transition-all font-medium">Khám</button>
+                    <button (click)="updateQueueStatus(q, 'Hoàn thành')"
+                      [ngClass]="q.status === 'Hoàn thành' ? 'bg-white shadow-xs text-emerald-600 font-bold' : 'text-slate-400 hover:text-slate-900'"
+                      class="px-2 py-1 text-[11px] rounded-md transition-all font-medium">Xong</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side Sidebar Widgets -->
+    <div class="space-y-6">
+
+      <!-- Deparment Traffic & Capacity -->
+      <div class="space-y-3">
+        <h2 class="text-base font-black tracking-tight text-slate-900 uppercase">Phân bổ dung lượng Khoa</h2>
+
+        <div
+          class="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-6 rounded-2xl shadow-md relative overflow-hidden group">
+          <div
+            class="absolute -right-12 -bottom-12 h-40 w-40 bg-indigo-500/10 rounded-full blur-2xl group-hover:bg-indigo-500/20 transition-all">
+          </div>
+
+          <div class="relative z-10 space-y-4">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Khoa bận nhất</p>
+                <h4 class="text-lg font-black mt-0.5">Khoa Nội Chỉnh Hình</h4>
+              </div>
+              <span class="px-2 py-1 rounded-md bg-white/10 text-[11px] font-bold text-indigo-300">88% Tải</span>
+            </div>
+
+            <p class="text-xs text-slate-300 leading-relaxed">Đang chiếm tới 42% lưu lượng bệnh nhân khám trong ngày hôm
+              nay.</p>
+
+            <!-- Mini multi-bar list -->
+            <div class="space-y-4 pt-2 border-t border-white/10">
+              <div *ngFor="let dept of departmentStats"
+                class="space-y-2 bg-white/[0.03] p-3 rounded-2xl border border-white/[0.05]">
+                <div class="flex justify-between text-[11px] font-medium text-slate-300">
+                  <span class="font-extrabold text-indigo-300">{{ dept.name }}</span>
+                  <span class="font-bold text-white bg-indigo-500/20 px-2 py-0.5 rounded-md text-[9px]">{{
+                    dept.patientsCount }} ca chờ</span>
+                </div>
+                <div class="w-full bg-white/15 h-1.5 rounded-full overflow-hidden">
+                  <div class="h-full rounded-full transition-all duration-500"
+                    [ngClass]="dept.capacity > 80 ? 'bg-rose-400' : dept.capacity > 40 ? 'bg-amber-400' : 'bg-emerald-400'"
+                    [style.width]="dept.capacity + '%'"></div>
+                </div>
+
+                <!-- 3 phòng khám tương ứng -->
+                <div
+                  class="grid grid-cols-3 gap-2 pt-2 mt-1 text-[8px] text-slate-400 font-bold uppercase tracking-wider border-t border-white/[0.03]">
+                  <div *ngFor="let c of dept.clinics"
+                    class="bg-white/[0.02] p-1.5 rounded-xl border border-white/[0.03] flex flex-col justify-between hover:bg-white/[0.05] transition-all">
+                    <span class="text-[7px] text-slate-400 truncate leading-none mb-1 block" [title]="c.name">{{ c.name }}</span>
+                    <span class="text-white text-[9px] font-black leading-none mb-1 block">🏥 {{ c.waiting }} chờ</span>
+                    <span class="text-[7px] text-indigo-200 truncate leading-none block font-medium"
+                      [title]="'Đang khám: ' + c.current">👤 {{ c.current }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Critical Stocks Alerts -->
+      <div class="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-xs space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-black uppercase text-slate-800 tracking-wider">Vật tư sắp cạn kiệt</h4>
+          <span class="flex h-2 w-2 rounded-full bg-rose-500 animate-ping"></span>
+        </div>
+        <div class="space-y-2.5">
+          <div *ngFor="let s of lowStocks"
+            class="flex items-center justify-between p-2 rounded-xl bg-rose-50/50 border border-rose-100/50">
+            <div class="flex items-center gap-2">
+              <span class="text-xs">⚠️</span>
+              <span class="text-xs font-bold text-slate-800">{{ s.name }}</span>
+            </div>
+            <span
+              class="text-xs font-black text-rose-600 bg-white px-2 py-0.5 rounded-md shadow-2xs border border-rose-100">{{
+              s.quantity }}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- MODAL: THÊM CA KHÁM KHẨN CẤP -->
+  <div *ngIf="showAddQueueModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
+    <div
+      class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-5 animate-scale-up">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div>
+          <h3 class="text-lg font-black text-slate-900">Thêm Ca Khám Khẩn Cấp</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Xếp bệnh nhân vào đầu hàng đợi trực tiếp</p>
+        </div>
+        <button (click)="closeAddQueueModal()"
+          class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-900 transition-colors">✕</button>
+      </div>
+
+      <div class="space-y-4">
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Tên bệnh nhân <span
+              class="text-rose-500">*</span></label>
+          <input type="text" [(ngModel)]="newQueue.patientName" placeholder="Nhập họ và tên bệnh nhân..."
+            class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-50 transition-all font-medium">
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Khoa / Phòng tiếp nhận</label>
+          <select [(ngModel)]="newQueue.department"
+            class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-50 transition-all font-medium text-slate-800">
+            <option value="Khoa Nội">Khoa Nội Tổng Hợp</option>
+            <option value="Khoa Ngoại">Khoa Ngoại Chỉnh Hình</option>
+            <option value="Khoa Nhi">Khoa Nhi & Sơ Sinh</option>
+            <option value="Khoa Cấp Cứu">Khoa Cấp Cứu Khẩn</option>
+          </select>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Trạng thái khởi tạo</label>
+          <select [(ngModel)]="newQueue.status"
+            class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-50 transition-all font-medium text-slate-800">
+            <option value="Đang chờ">Đang chờ</option>
+            <option value="Đang khám">Đang khám ngay</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+        <button (click)="closeAddQueueModal()"
+          class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all">Hủy</button>
+        <button (click)="saveNewQueue()"
+          class="px-5 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition-all shadow-md shadow-indigo-500/20">Xác
+          nhận Thêm</button>
+      </div>
+    </div>
+  </div>
+</div>

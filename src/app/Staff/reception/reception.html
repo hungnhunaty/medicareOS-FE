@@ -1,0 +1,250 @@
+<div class="space-y-6 animate-fade-in">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-100">
+    <div>
+      <h1 class="text-2xl font-black tracking-tight text-slate-900">Tiếp Đón & Hàng Đợi</h1>
+      <p class="text-sm font-medium text-slate-500 mt-1">Điều phối bệnh nhân vào các phòng khám chuyên khoa.</p>
+    </div>
+    <div class="ml-auto flex flex-wrap items-center gap-3">
+      <button (click)="openQrCreator()"
+        class="bg-sky-600 text-white px-6 py-3 rounded-2xl text-sm font-bold hover:bg-sky-700 transition-all shadow-lg shadow-sky-500/20 flex items-center gap-2">
+        <span class="text-xl">📷</span>
+        <span>Đăng Ký Bằng QR</span>
+      </button>
+      <button (click)="openRegister()"
+        class="bg-gradient-to-r from-sky-600 to-blue-600 text-white px-6 py-3 rounded-2xl text-sm font-bold hover:from-sky-700 hover:to-blue-700 transition-all shadow-lg shadow-sky-500/20 flex items-center gap-2">
+        <span class="text-xl">+</span>
+        <span>Đăng Ký Tiếp Đón Mới</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+    <div class="relative w-full md:w-96">
+      <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
+      <input type="text" [(ngModel)]="searchKeyword" placeholder="Tra cứu theo Tên hoặc Mã BN..."
+        class="w-full rounded-xl bg-slate-50 py-2.5 pl-10 pr-4 text-sm border border-slate-200 focus:bg-white focus:outline-none focus:border-sky-500 transition-all">
+    </div>
+  </div>
+
+  <div class="bg-white border border-slate-200/80 rounded-3xl shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm whitespace-nowrap">
+      <thead
+        class="bg-slate-50 text-slate-400 border-b border-slate-100 uppercase text-[10px] tracking-widest font-black">
+        <tr>
+          <th class="px-6 py-4">STT</th>
+          <th class="px-6 py-4">Bệnh nhân</th>
+          <th class="px-6 py-4">Phòng khám / Khoa</th>
+          <th class="px-6 py-4">Triệu chứng</th>
+          <th class="px-6 py-4">Trạng thái</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-50">
+        <tr *ngFor="let q of filteredQueues" class="hover:bg-slate-50/50 transition-all">
+          <td class="px-6 py-4">
+            <div
+              class="flex flex-col items-center justify-center bg-slate-100 rounded-xl h-10 w-10 border border-slate-200">
+              <span class="text-xs font-black text-slate-900 leading-none">{{ q.queueNumber }}</span>
+              <span class="text-[8px] font-bold text-slate-400 uppercase mt-0.5">{{ q.time.split(' ')[0] }}</span>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <span class="text-lg">{{ q.gender === 'Nam' ? '👨' : '👩' }}</span>
+              <div>
+                <p class="font-black text-slate-900">{{ q.patientName }}</p>
+                <p class="text-[10px] font-bold text-sky-600">{{ q.patientCode }}</p>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <p class="font-bold text-slate-700">{{ q.clinicName }}</p>
+            <p class="text-[11px] text-slate-400 font-medium">{{ q.department }}</p>
+          </td>
+          <td class="px-6 py-4 text-slate-500 italic max-w-xs truncate">{{ q.symptoms }}</td>
+          <td class="px-6 py-4">
+            <span [class.bg-amber-50]="q.status === 'Chờ khám'" [class.text-amber-600]="q.status === 'Chờ khám'"
+              [class.bg-emerald-50]="q.status === 'Đang khám'" [class.text-emerald-600]="q.status === 'Đang khám'"
+              [class.bg-slate-100]="q.status === 'Hoàn thành'" [class.text-slate-500]="q.status === 'Hoàn thành'"
+              class="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase border border-transparent">
+              {{ q.status }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+  <!-- MODAL: REGISTER -->
+  <div *ngIf="showRegisterModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-start justify-center p-4 z-50 animate-fade-in">
+    <div
+      class="bg-white rounded-[2.5rem] p-8 max-w-lg w-full shadow-2xl border border-slate-100 space-y-6 animate-scale-up">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-black text-slate-900">Đăng Ký Tiếp Đón</h3>
+        <button (click)="closeRegister()" class="text-slate-400 hover:text-slate-900">✕</button>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Lựa chọn tài khoản -->
+        <div class="space-y-1.5">
+          <label class="block text-[10px] font-black text-slate-400 uppercase">Phân loại khách</label>
+          <div class="flex gap-4">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" [(ngModel)]="newPatient.hasAccount" [value]="false" class="accent-sky-600">
+              <span class="text-sm font-bold text-slate-700">Khách không sử dụng tài khoản</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" [(ngModel)]="newPatient.hasAccount" [value]="true" class="accent-sky-600">
+              <span class="text-sm font-bold text-slate-700">Khách có sử dụng tài khoản</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Ô nhập UserID khi có tài khoản -->
+        <div *ngIf="newPatient.hasAccount" class="space-y-1.5 bg-sky-50/50 p-4 rounded-2xl border border-sky-100 animate-fade-in">
+          <label class="block text-[10px] font-black text-sky-600 uppercase">Mã User / UserID của bệnh nhân</label>
+          <div class="flex gap-2">
+            <input type="text" [(ngModel)]="patientSearchId" placeholder="Nhập UserID (Ví dụ: 1)..."
+              class="flex-1 rounded-xl bg-white py-2.5 px-4 text-sm font-bold border border-slate-200 outline-none focus:border-sky-500">
+            <button type="button" (click)="lookupPatient()"
+              class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition-all shadow-md shadow-sky-500/10">
+              🔍 Tra Cứu
+            </button>
+          </div>
+          <p class="text-[10px] text-slate-400 font-medium italic mt-1">Hệ thống sẽ tự động điền các thông tin đã đăng ký của bệnh nhân sau khi tra cứu.</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label class="block text-[10px] font-black text-slate-400 uppercase">Họ và tên bệnh nhân</label>
+            <input type="text" [(ngModel)]="newPatient.patientName" [disabled]="newPatient.hasAccount"
+              class="w-full rounded-xl bg-slate-50 py-3 px-4 text-sm font-bold border border-slate-200 outline-none focus:border-sky-500 disabled:opacity-60 disabled:cursor-not-allowed">
+          </div>
+          <div class="space-y-1.5">
+            <label class="block text-[10px] font-black text-slate-400 uppercase">Số điện thoại</label>
+            <input type="text" [(ngModel)]="newPatient.phone" [disabled]="newPatient.hasAccount"
+              class="w-full rounded-xl bg-slate-50 py-3 px-4 text-sm font-bold border border-slate-200 outline-none focus:border-sky-500 disabled:opacity-60 disabled:cursor-not-allowed">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label class="block text-[10px] font-black text-slate-400 uppercase">Giới tính</label>
+            <select [(ngModel)]="newPatient.gender" [disabled]="newPatient.hasAccount"
+              class="w-full rounded-xl bg-slate-50 py-3 px-4 text-sm font-bold border border-slate-200 outline-none disabled:opacity-60 disabled:cursor-not-allowed">
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
+            </select>
+          </div>
+          <div class="space-y-1.5">
+            <label class="block text-[10px] font-black text-slate-400 uppercase">Khoa khám</label>
+            <select [(ngModel)]="newPatient.department" (change)="onDepartmentChange()"
+              class="w-full rounded-xl bg-slate-50 py-3 px-4 text-sm font-bold border border-slate-200 outline-none">
+              <option value="Khoa Khám bệnh">Khoa Khám bệnh</option>
+              <option value="Khoa Nội Tổng Hợp">Khoa Nội Tổng Hợp</option>
+              <option value="Khoa Ngoại Tổng Hợp">Khoa Ngoại Tổng Hợp</option>
+              <option value="Khoa Nhi">Khoa Nhi</option>
+              <option value="Khoa Xét nghiệm">Khoa Xét nghiệm</option>
+              <option value="Khoa Chẩn Đoán Hình Ảnh">Khoa Chẩn Đoán Hình Ảnh</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4">
+          <div class="space-y-1.5">
+            <label class="block text-[10px] font-black text-slate-400 uppercase">Chỉ định Bác sĩ (Tùy chọn)</label>
+            <select [(ngModel)]="newPatient.doctorId"
+              class="w-full rounded-xl bg-slate-50 py-3 px-4 text-sm font-bold border border-slate-200 outline-none">
+              <option [value]="0">Tự động điều phối theo khoa</option>
+              <option *ngFor="let d of filteredDoctors" [value]="d.doctorId">{{ d.doctorName }} ({{ d.clinicName || 'Chưa xếp phòng' }})</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="block text-[10px] font-black text-slate-400 uppercase">Triệu chứng ban đầu</label>
+          <textarea [(ngModel)]="newPatient.symptoms" rows="3"
+            class="w-full rounded-xl bg-slate-50 py-3 px-4 text-sm font-medium border border-slate-200 outline-none focus:border-sky-500"></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-4">
+        <button (click)="closeRegister()"
+          class="px-6 py-3 rounded-2xl border border-slate-200 text-sm font-bold text-slate-600 hover:bg-slate-50">Hủy</button>
+        <button (click)="submitRegistration()"
+          class="px-8 py-3 rounded-2xl bg-sky-600 text-white text-sm font-black hover:bg-sky-700 shadow-xl shadow-sky-500/20">Xác
+          Nhận Đăng Ký</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: QR CREATOR (STANDALONE) -->
+  <div *ngIf="showQrModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-start justify-center p-4 z-50 animate-fade-in">
+    <div class="bg-white rounded-[2.5rem] p-6 max-w-md w-full shadow-2xl border border-slate-100 space-y-4 mt-10">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-black text-slate-900">Tạo QR đăng ký</h3>
+        <button (click)="closeQrCreator()" class="text-slate-400 hover:text-slate-900">✕</button>
+      </div>
+
+      <div class="flex items-center gap-2 text-xs text-slate-600">
+        <span [ngClass]="{
+            'text-emerald-600': signalRStatus === 'connected',
+            'text-amber-600': signalRStatus === 'connecting',
+            'text-rose-600': signalRStatus === 'failed'
+          }">
+          SignalR: {{ signalRStatus === 'disconnected' ? 'Chưa kết nối' : signalRStatus === 'connecting' ? 'Đang kết nối...' : signalRStatus === 'connected' ? 'Đã kết nối' : 'Lỗi' }}
+        </span>
+        <span *ngIf="signalRError" class="text-rose-600">({{ signalRError }})</span>
+      </div>
+
+      <div class="space-y-3">
+        <div class="space-y-1.5">
+          <label class="block text-[10px] font-black text-slate-400 uppercase">Khoa khám</label>
+          <select [(ngModel)]="qrModel.departmentId" (change)="onQrDepartmentChange()"
+            class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm font-bold border border-slate-200 outline-none">
+            <option value="2">Khoa Khám bệnh</option>
+            <option value="5">Khoa Nội Tổng Hợp</option>
+            <option value="6">Khoa Ngoại Tổng Hợp</option>
+            <option value="3">Khoa Nhi</option>
+            <option value="4">Khoa Xét nghiệm</option>
+            <option value="7">Khoa Chẩn Đoán Hình Ảnh</option>
+          </select>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="block text-[10px] font-black text-slate-400 uppercase">Chỉ định Bác sĩ (Tùy chọn)</label>
+          <select [(ngModel)]="qrModel.doctorId"
+            class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm font-bold border border-slate-200 outline-none">
+            <option [value]="0">Tự động điều phối theo khoa</option>
+            <option *ngFor="let d of filteredQrDoctors" [value]="d.doctorId">{{ d.doctorName }} ({{ d.clinicName || 'Chưa xếp phòng' }})</option>
+          </select>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="block text-[10px] font-black text-slate-400 uppercase">Triệu chứng</label>
+          <textarea [(ngModel)]="qrModel.symptoms" rows="3"
+            class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm font-medium border border-slate-200 outline-none focus:border-sky-500"></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <button (click)="closeQrCreator()"
+          class="px-4 py-2 rounded-2xl border border-slate-200 text-sm font-bold text-slate-600 hover:bg-slate-50">Hủy</button>
+        <button (click)="createQr()"
+          class="px-4 py-2 rounded-2xl bg-sky-600 text-white font-bold hover:bg-sky-700">Tạo QR</button>
+      </div>
+
+      <div *ngIf="qrSessionId" class="bg-slate-50 p-4 rounded-2xl space-y-2">
+        <p class="text-sm font-bold text-slate-900">✅ QR tạo thành công!</p>
+        <div class="flex justify-center">
+          <img [src]="qrImageUrl" alt="QR" width="180" height="180" class="border border-slate-200 rounded-xl" />
+        </div>
+        <p class="text-xs text-slate-500 break-all">SessionId: {{ qrSessionId }}</p>
+        <p class="text-xs text-slate-600 italic">Khi có bệnh nhân quét QR, hệ thống sẽ tự động báo.</p>
+      </div>
+    </div>
+  </div>
+</div>
