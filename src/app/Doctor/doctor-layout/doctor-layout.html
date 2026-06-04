@@ -70,40 +70,6 @@
           <span class="text-xs font-bold text-teal-700">📍 {{ doctorInfo.clinicName || 'Chưa xếp phòng' }}</span>
         </div>
 
-        <!-- Notifications bell -->
-        <div class="relative">
-          <button (click)="toggleNotificationMenu()"
-            class="relative p-2 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-all duration-200">
-            <span class="text-lg">🔔</span>
-            <span *ngIf="unreadCount > 0"
-              class="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white border-2 border-white animate-pulse">
-              {{ unreadCount }}
-            </span>
-          </button>
-
-          <!-- Notifications Popover Menu -->
-          <div *ngIf="showNotificationMenu"
-            class="absolute right-0 mt-2 w-80 rounded-2xl bg-white p-4 shadow-xl border border-slate-100 z-50 transition-all">
-            <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
-              <span class="font-bold text-sm text-slate-900">Thông báo y khoa</span>
-              <button *ngIf="unreadCount > 0" (click)="markAllAsRead()"
-                class="text-[11px] font-semibold text-teal-600 hover:underline">Đánh dấu đã đọc</button>
-            </div>
-            <div class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
-              <div *ngFor="let item of notifications" class="p-2.5 rounded-xl transition-all border border-transparent"
-                [ngClass]="item.unread ? 'bg-teal-50/50 border-teal-100' : 'hover:bg-slate-50'">
-                <div class="flex justify-between items-start">
-                  <p class="text-xs font-bold text-slate-900">{{ item.title }}</p>
-                  <span class="text-[10px] font-medium text-slate-400">{{ item.time }}</span>
-                </div>
-                <p class="text-[11px] text-slate-600 mt-1 leading-relaxed">{{ item.desc }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="h-6 w-[1px] bg-slate-200"></div>
-
         <!-- User Profile Trigger -->
         <div class="relative">
           <div (click)="toggleProfileMenu()"

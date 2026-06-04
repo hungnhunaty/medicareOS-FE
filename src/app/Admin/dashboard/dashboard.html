@@ -7,11 +7,6 @@
         trực tiếp của MediCare hôm nay.</p>
     </div>
     <div class="flex flex-wrap items-center gap-3">
-      <button (click)="exportReport()"
-        class="bg-white border border-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-50 hover:border-slate-300 transition-all shadow-xs flex items-center gap-2">
-        <span>📥</span>
-        <span>Xuất báo cáo</span>
-      </button>
       <button (click)="openAddQueueModal()"
         class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:from-indigo-700 hover:to-violet-700 transition-all shadow-md shadow-indigo-500/20 flex items-center gap-2">
         <span class="text-lg leading-none">+</span>
@@ -123,7 +118,8 @@
           <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
         </div>
         <div class="flex items-center gap-3">
-          <select [(ngModel)]="selectedDepartment" class="text-xs font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 outline-none focus:border-indigo-500 transition-colors cursor-pointer">
+          <select [(ngModel)]="selectedDepartment"
+            class="text-xs font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 outline-none focus:border-indigo-500 transition-colors cursor-pointer">
             <option value="Tất cả Khoa">Tất cả Khoa</option>
             <option *ngFor="let dept of departmentStats" [value]="dept.name">{{ dept.name }}</option>
           </select>
@@ -241,7 +237,8 @@
                   class="grid grid-cols-3 gap-2 pt-2 mt-1 text-[8px] text-slate-400 font-bold uppercase tracking-wider border-t border-white/[0.03]">
                   <div *ngFor="let c of dept.clinics"
                     class="bg-white/[0.02] p-1.5 rounded-xl border border-white/[0.03] flex flex-col justify-between hover:bg-white/[0.05] transition-all">
-                    <span class="text-[7px] text-slate-400 truncate leading-none mb-1 block" [title]="c.name">{{ c.name }}</span>
+                    <span class="text-[7px] text-slate-400 truncate leading-none mb-1 block" [title]="c.name">{{ c.name
+                      }}</span>
                     <span class="text-white text-[9px] font-black leading-none mb-1 block">🏥 {{ c.waiting }} chờ</span>
                     <span class="text-[7px] text-indigo-200 truncate leading-none block font-medium"
                       [title]="'Đang khám: ' + c.current">👤 {{ c.current }}</span>
