@@ -6,8 +6,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class StaffPortalService {
-  private baseUrl = 'http://localhost:5265';
-  private apiUrl = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:5265/api/StaffPortal`;
+  private baseUrl = 'https://medicareos-bend.onrender.com';
+  private apiUrl = `https://medicareos-bend.onrender.com/api/StaffPortal`;
 
   constructor(private http: HttpClient) { }
 
@@ -40,7 +40,7 @@ export class StaffPortalService {
     return this.http.post<any>(`${this.baseUrl}/api/queue/qr/create`, data);
   }
   getPatients(): Observable<any[]> {
-    const adminPatientUrl = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:5265/api/AdminPatient`;
+    const adminPatientUrl = `https://medicareos-bend.onrender.com/api/AdminPatient`;
     return this.http.get<any[]>(adminPatientUrl);
   }
 }

@@ -236,7 +236,7 @@ export class StaffReception implements OnInit, OnDestroy {
 
   private async startAndJoinSession(sessionId: string) {
     try {
-      const hubUrl = 'http://localhost:5265/queueHub';
+      const hubUrl = 'https://medicareos-bend.onrender.com/queueHub';
       this.hubConnection = new HubConnectionBuilder()
         .withUrl(hubUrl, {
           transport: HttpTransportType.LongPolling,

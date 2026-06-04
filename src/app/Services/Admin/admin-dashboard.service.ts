@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AdminDashboardService {
-  private apiUrl = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:5265/api/AdminDashboard`;
+  private apiUrl = `https://medicareos-bend.onrender.com/api/AdminDashboard`;
 
   constructor(private http: HttpClient) { }
 

@@ -21,7 +21,7 @@ export class SignalRService {
     if (typeof window === 'undefined') return;
 
     const hostname = window.location.hostname;
-    const hubUrl = `http://${hostname}:5265/queueHub`;
+    const hubUrl = `https://medicareos-bend.onrender.com/queueHub`;
 
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(hubUrl, {

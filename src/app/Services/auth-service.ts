@@ -10,7 +10,7 @@ import { LoginResponseDto } from '../Interfaces/login-response-dto';
 export class AuthService {
   constructor(private http: HttpClient, private router: Router){}
 
-  url:string = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:5265/api/`;
+  url:string = `https://medicareos-bend.onrender.com/api/`;
 
   register(data: any){
     return this.http.post(this.url + "account/register", data);

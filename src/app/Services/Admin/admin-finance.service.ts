@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AdminFinanceService {
-  private apiUrl = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:5265/api/AdminFinance`;
+  private apiUrl = `https://medicareos-bend.onrender.com/api/AdminFinance`;
 
   constructor(private http: HttpClient) { }
 
