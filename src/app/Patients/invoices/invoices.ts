@@ -1,5 +1,7 @@
+// d:\FE\src\app\Patients\invoices\invoices.ts
+
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { PatientPortalService } from '../../Services/Patient/patient-portal.service';
 
 @Component({
@@ -16,7 +18,10 @@ export class PatientInvoices implements OnInit {
   userId?: number;
   isLoading = true;
 
-  constructor(private patientService: PatientPortalService) {}
+  constructor(
+    private patientService: PatientPortalService,
+    private cd: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
     const userInfoStr = localStorage.getItem('userInfo');
@@ -32,17 +37,23 @@ export class PatientInvoices implements OnInit {
   }
 
   loadData(): void {
-    if (!this.userId) return;
-    
+    if (!this.userId) {
+      this.isLoading = false;
+      this.cd.detectChanges();
+      return;
+    }
+
     this.patientService.getDashboardData(this.userId).subscribe({
       next: (data) => {
         this.invoices = data.invoices || [];
         this.filterInvoices();
         this.isLoading = false;
+        this.cd.detectChanges();
       },
       error: (err) => {
         console.error('Lỗi khi tải hóa đơn:', err);
         this.isLoading = false;
+        this.cd.detectChanges();
       }
     });
   }
@@ -60,5 +71,6 @@ export class PatientInvoices implements OnInit {
     } else {
       this.filteredInvoices = this.invoices.filter(i => i.status === 'Chờ thanh toán');
     }
+    this.cd.detectChanges();
   }
 }
