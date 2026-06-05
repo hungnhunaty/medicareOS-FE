@@ -13,6 +13,7 @@ import { Patients } from './Admin/patients/patients';
 import { Services } from './Admin/services/services';
 import { Medications } from './Admin/medications/medications';
 import { Finance } from './Admin/finance/finance';
+import { Rooms } from './Admin/rooms/rooms';
 
 import { DoctorLayout } from './Doctor/doctor-layout/doctor-layout';
 import { DoctorExaminations } from './Doctor/examinations/examinations';
@@ -53,6 +54,7 @@ export const routes: Routes = [
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
             { path: 'dashboard', component: Dashboard},
             { path: 'staff', component: Staff},
+            { path: 'rooms', component: Rooms},
             { path: 'patients', component: Patients},
             { path: 'services', component: Services},
             { path: 'medications', component: Medications},

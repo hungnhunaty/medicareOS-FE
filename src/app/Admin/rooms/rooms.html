@@ -1,0 +1,331 @@
+<div class="space-y-6 animate-fade-in">
+  <!-- Title & Action Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-100">
+    <div>
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-black tracking-tight text-slate-900">Phòng Khám</h1>
+        <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200">
+          {{ filteredRoomList.length }} phòng
+        </span>
+      </div>
+      <p class="text-sm font-medium text-slate-500 mt-1">Quản lý danh sách phòng khám, phân bổ bác sĩ và theo dõi tình
+        trạng sử dụng.</p>
+    </div>
+    <button (click)="openAddModal()"
+      class="flex items-center gap-2 bg-gradient-to-r from-slate-900 to-slate-800 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:from-slate-800 hover:to-slate-700 transition-all shadow-md shadow-slate-900/10 shrink-0">
+      <span class="text-lg leading-none">+</span>
+      <span>Thêm Phòng</span>
+    </button>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <!-- Tổng phòng -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+      <div class="flex items-center gap-3">
+        <div
+          class="h-10 w-10 rounded-xl bg-gradient-to-tr from-slate-100 to-slate-200 flex items-center justify-center text-lg shadow-2xs">
+          🏥
+        </div>
+        <div>
+          <p class="text-2xl font-black text-slate-900">{{ totalRooms }}</p>
+          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tổng phòng</p>
+        </div>
+      </div>
+    </div>
+    <!-- Phòng trống -->
+    <div class="bg-white rounded-2xl border border-emerald-100 p-4 shadow-xs">
+      <div class="flex items-center gap-3">
+        <div
+          class="h-10 w-10 rounded-xl bg-gradient-to-tr from-emerald-50 to-emerald-100 flex items-center justify-center text-lg shadow-2xs">
+          🟢
+        </div>
+        <div>
+          <p class="text-2xl font-black text-emerald-600">{{ availableRooms }}</p>
+          <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Phòng trống</p>
+        </div>
+      </div>
+    </div>
+    <!-- Đang sử dụng -->
+    <div class="bg-white rounded-2xl border border-blue-100 p-4 shadow-xs">
+      <div class="flex items-center gap-3">
+        <div
+          class="h-10 w-10 rounded-xl bg-gradient-to-tr from-blue-50 to-blue-100 flex items-center justify-center text-lg shadow-2xs">
+          🔵
+        </div>
+        <div>
+          <p class="text-2xl font-black text-blue-600">{{ occupiedRooms }}</p>
+          <p class="text-[10px] font-bold text-blue-500 uppercase tracking-wider">Đang sử dụng</p>
+        </div>
+      </div>
+    </div>
+    <!-- Bảo trì -->
+    <div class="bg-white rounded-2xl border border-amber-100 p-4 shadow-xs">
+      <div class="flex items-center gap-3">
+        <div
+          class="h-10 w-10 rounded-xl bg-gradient-to-tr from-amber-50 to-amber-100 flex items-center justify-center text-lg shadow-2xs">
+          🟡
+        </div>
+        <div>
+          <p class="text-2xl font-black text-amber-600">{{ maintenanceRooms }}</p>
+          <p class="text-[10px] font-bold text-amber-500 uppercase tracking-wider">Bảo trì</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search & Filter Controls -->
+  <div
+    class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+
+    <!-- Search keyword -->
+    <div class="relative w-full sm:w-80">
+      <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
+      <input type="text" [(ngModel)]="searchKeyword" placeholder="Tìm tên phòng, bác sĩ..."
+        class="w-full rounded-xl bg-slate-50 py-2.5 pl-10 pr-4 text-sm border border-slate-200 focus:bg-white focus:outline-none focus:border-indigo-500 transition-all font-medium placeholder:text-slate-400">
+    </div>
+
+    <!-- Filter selects -->
+    <div class="flex items-center gap-3 w-full sm:w-auto justify-end flex-wrap">
+      <span class="text-xs font-bold text-slate-400 uppercase tracking-wider hidden md:inline">Bộ lọc:</span>
+
+      <select [(ngModel)]="selectedStatus"
+        class="w-full sm:w-auto rounded-xl bg-slate-50 py-2.5 px-4 text-sm border border-slate-200 focus:bg-white focus:outline-none focus:border-indigo-500 font-semibold text-slate-700 transition-all">
+        <option value="Tất cả trạng thái">Tất cả trạng thái</option>
+        <option value="Trống">Trống</option>
+        <option value="Đang sử dụng">Đang sử dụng</option>
+        <option value="Bảo trì">Bảo trì</option>
+      </select>
+
+      <select [(ngModel)]="selectedType"
+        class="w-full sm:w-auto rounded-xl bg-slate-50 py-2.5 px-4 text-sm border border-slate-200 focus:bg-white focus:outline-none focus:border-indigo-500 font-semibold text-slate-700 transition-all">
+        <option value="Tất cả loại phòng">Tất cả loại phòng</option>
+        <option value="Phòng khám">Phòng khám</option>
+        <option value="Phòng thủ thuật">Phòng thủ thuật</option>
+        <option value="Phòng xét nghiệm">Phòng xét nghiệm</option>
+        <option value="Phòng chẩn đoán hình ảnh">Phòng chẩn đoán hình ảnh</option>
+        <option value="Phòng cấp cứu">Phòng cấp cứu</option>
+      </select>
+
+      <select [(ngModel)]="selectedFloor"
+        class="w-full sm:w-auto rounded-xl bg-slate-50 py-2.5 px-4 text-sm border border-slate-200 focus:bg-white focus:outline-none focus:border-indigo-500 font-semibold text-slate-700 transition-all">
+        <option value="Tất cả tầng">Tất cả tầng</option>
+        <option *ngFor="let floor of uniqueFloors" [value]="floor">Tầng {{ floor }}</option>
+      </select>
+
+      <button *ngIf="hasActiveFilters" (click)="clearFilters()"
+        class="px-3 py-2 text-xs font-bold text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all shrink-0">
+        Xóa lọc
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Room List Table Card -->
+  <div class="bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm whitespace-nowrap">
+        <thead
+          class="bg-slate-50/75 text-slate-400 border-b border-slate-100 uppercase text-[10px] tracking-wider font-bold">
+          <tr>
+            <th class="px-6 py-4">Phòng</th>
+            <th class="px-6 py-4">Loại phòng</th>
+            <th class="px-6 py-4">Tầng</th>
+            <th class="px-6 py-4">Bác sĩ phụ trách</th>
+            <th class="px-6 py-4 text-center">Trạng thái</th>
+            <th class="px-6 py-4 text-right">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100/60">
+          <tr *ngIf="filteredRoomList.length === 0">
+            <td colspan="6" class="px-6 py-12 text-center text-slate-400 font-medium">
+              Không tìm thấy phòng khám nào phù hợp với điều kiện lọc.
+            </td>
+          </tr>
+          <tr *ngFor="let room of filteredRoomList" class="hover:bg-slate-50/50 transition-all group">
+            <!-- Tên phòng -->
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div
+                  class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-50 to-indigo-100 flex items-center justify-center text-lg border border-indigo-100 shadow-2xs shrink-0">
+                  {{ getRoomTypeIcon(room.roomType) }}
+                </div>
+                <div>
+                  <p class="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{{ room.roomName }}
+                  </p>
+                  <p *ngIf="room.description" class="text-xs text-slate-400 mt-0.5 max-w-[200px] truncate">{{
+                    room.description }}</p>
+                </div>
+              </div>
+            </td>
+            <!-- Loại phòng -->
+            <td class="px-6 py-4">
+              <span
+                class="font-semibold text-slate-700 bg-slate-50 border border-slate-100 px-2.5 py-1 rounded-lg text-xs">
+                {{ room.roomType }}
+              </span>
+            </td>
+            <!-- Tầng -->
+            <td class="px-6 py-4 font-bold text-slate-600">
+              Tầng {{ room.floor }}
+            </td>
+            <!-- Bác sĩ phụ trách -->
+            <td class="px-6 py-4">
+              <div *ngIf="room.assignedDoctorName" class="flex items-center gap-2">
+                <div
+                  class="h-7 w-7 rounded-lg bg-gradient-to-tr from-violet-100 to-violet-200 flex items-center justify-center text-violet-800 text-[10px] font-black border border-violet-200 shadow-2xs shrink-0">
+                  {{ room.assignedDoctorName.charAt(0) }}
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-slate-900">{{ room.assignedDoctorName }}</p>
+                  <p *ngIf="room.assignedDoctorDepartment" class="text-[10px] text-slate-400 font-medium">{{
+                    room.assignedDoctorDepartment }}</p>
+                </div>
+              </div>
+              <span *ngIf="!room.assignedDoctorName"
+                class="text-xs text-slate-300 italic font-medium">Chưa phân bổ</span>
+            </td>
+            <!-- Trạng thái -->
+            <td class="px-6 py-4 text-center">
+              <button (click)="toggleStatus(room)" title="Click để đổi trạng thái"
+                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border transition-all cursor-pointer shadow-2xs"
+                [ngClass]="{
+                        'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100': room.status === 'Trống',
+                        'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100': room.status === 'Đang sử dụng',
+                        'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100': room.status === 'Bảo trì'
+                      }">
+                <span class="h-1.5 w-1.5 rounded-full mr-1.5" [ngClass]="{
+                        'bg-emerald-500 animate-pulse': room.status === 'Trống',
+                        'bg-blue-500': room.status === 'Đang sử dụng',
+                        'bg-amber-500': room.status === 'Bảo trì'
+                      }"></span>
+                {{ room.status }}
+              </button>
+            </td>
+            <!-- Thao tác -->
+            <td class="px-6 py-4 text-right">
+              <div class="flex items-center justify-end gap-1">
+                <button (click)="openEditModal(room)"
+                  class="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 font-medium transition-all"
+                  title="Chỉnh sửa">
+                  ✏️
+                </button>
+                <button (click)="deleteRoom(room)"
+                  class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 font-medium transition-all"
+                  title="Xóa phòng">
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL: THÊM / SỬA PHÒNG KHÁM -->
+  <div *ngIf="showModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
+    <div
+      class="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl border border-slate-100 space-y-6 animate-scale-up">
+
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div>
+          <h3 class="text-xl font-black text-slate-900">
+            {{ modalMode === 'add' ? 'Thêm Phòng Khám Mới' : 'Cập Nhật Phòng Khám' }}
+          </h3>
+          <p class="text-xs font-medium text-slate-500 mt-0.5">
+            {{ modalMode === 'add' ? 'Khai báo thông tin phòng khám vào hệ thống' : 'Chỉnh sửa thông tin phòng ' +
+            currentRoom.roomName }}
+          </p>
+        </div>
+        <button (click)="closeModal()"
+          class="h-8 w-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-900 transition-colors">✕</button>
+      </div>
+
+      <!-- Modal Form Content -->
+      <div class="space-y-4">
+
+        <!-- Tên phòng -->
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Tên phòng khám <span
+              class="text-rose-500">*</span></label>
+          <input type="text" [(ngModel)]="currentRoom.roomName" placeholder="Ví dụ: Phòng khám 101"
+            class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-50 transition-all font-semibold text-slate-900">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Loại phòng -->
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Loại phòng</label>
+            <select [(ngModel)]="currentRoom.roomType"
+              class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none transition-all font-semibold text-slate-800">
+              <option value="Phòng khám">🩺 Phòng khám</option>
+              <option value="Phòng thủ thuật">💉 Phòng thủ thuật</option>
+              <option value="Phòng xét nghiệm">🧪 Phòng xét nghiệm</option>
+              <option value="Phòng chẩn đoán hình ảnh">📷 Phòng chẩn đoán hình ảnh</option>
+              <option value="Phòng cấp cứu">🚨 Phòng cấp cứu</option>
+            </select>
+          </div>
+          <!-- Tầng -->
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Tầng</label>
+            <select [(ngModel)]="currentRoom.floor"
+              class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none transition-all font-semibold text-slate-800">
+              <option [ngValue]="1">Tầng 1</option>
+              <option [ngValue]="2">Tầng 2</option>
+              <option [ngValue]="3">Tầng 3</option>
+              <option [ngValue]="4">Tầng 4</option>
+              <option [ngValue]="5">Tầng 5</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Trạng thái -->
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Trạng thái</label>
+            <select [(ngModel)]="currentRoom.status"
+              class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none transition-all font-semibold text-slate-800">
+              <option value="Trống">🟢 Trống</option>
+              <option value="Đang sử dụng">🔵 Đang sử dụng</option>
+              <option value="Bảo trì">🟡 Bảo trì</option>
+            </select>
+          </div>
+          <!-- Bác sĩ phụ trách -->
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Bác sĩ phụ trách</label>
+            <select [(ngModel)]="currentRoom.assignedDoctorId"
+              class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none transition-all font-semibold text-slate-800">
+              <option [ngValue]="undefined">— Chưa phân bổ —</option>
+              <option *ngFor="let doc of doctorList" [ngValue]="doc.userId">{{ doc.name }} ({{ doc.department }})
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Mô tả -->
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Mô tả / Ghi chú</label>
+          <textarea [(ngModel)]="currentRoom.description" rows="3"
+            placeholder="Thêm mô tả hoặc ghi chú cho phòng khám..."
+            class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-50 transition-all font-medium text-slate-900 resize-none"></textarea>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+        <button (click)="closeModal()"
+          class="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all">Hủy
+          bỏ</button>
+        <button (click)="saveRoom()"
+          class="px-6 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-all shadow-md shadow-slate-900/10">
+          {{ modalMode === 'add' ? 'Hoàn tất Thêm' : 'Lưu Thay Đổi' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
