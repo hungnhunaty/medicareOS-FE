@@ -134,21 +134,6 @@
               </span>
             </td>
             <!-- Bác sĩ đang khám -->
-            <td class="px-6 py-4">
-              <div *ngIf="room.assignedDoctorName" class="flex items-center gap-2">
-                <div
-                  class="h-7 w-7 rounded-lg bg-gradient-to-tr from-violet-100 to-violet-200 flex items-center justify-center text-violet-800 text-[10px] font-black border border-violet-200 shadow-2xs shrink-0">
-                  {{ room.assignedDoctorName.charAt(0) }}
-                </div>
-                <div>
-                  <p class="text-xs font-bold text-slate-900">{{ room.assignedDoctorName }}</p>
-                  <p *ngIf="room.assignedDoctorDepartment" class="text-[10px] text-slate-400 font-medium">{{
-                    room.assignedDoctorDepartment }}</p>
-                </div>
-              </div>
-              <span *ngIf="!room.assignedDoctorName" class="text-xs text-slate-300 italic font-medium">Không có bác
-                sĩ</span>
-            </td>
             <!-- Trạng thái -->
             <td class="px-6 py-4 text-center">
               <button (click)="toggleActive(room)" title="Click để đổi trạng thái hoạt động"
