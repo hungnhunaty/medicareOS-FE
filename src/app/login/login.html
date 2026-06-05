@@ -1,6 +1,9 @@
-<div class="min-h-screen flex items-center justify-center p-6 font-sans bg-gradient-to-br from-[#111827] via-[#0B0F19] to-[#010409]">
-  
-  <div class="w-full max-w-4xl rounded-4xl shadow-[0_0_50px_-12px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col md:flex-row" appCanvaReveal>
+<div
+  class="min-h-screen flex items-center justify-center p-6 font-sans bg-gradient-to-br from-[#111827] via-[#0B0F19] to-[#010409]">
+
+  <div
+    class="w-full max-w-4xl rounded-4xl shadow-[0_0_50px_-12px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col md:flex-row"
+    appCanvaReveal>
 
     <div class="hidden md:flex md:w-5/12 bg-black p-12 flex-col justify-between text-white relative overflow-hidden">
       <div class="absolute -top-24 -right-24 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
@@ -9,17 +12,18 @@
         <div class="flex items-center gap-3 mb-10">
           <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-black">
             <img src="Logo1.png" class="w-full h-full">
+          </div>
+          <span class="text-xl font-bold tracking-tight">MediCareOS</span>
         </div>
-          <span class="text-xl font-bold tracking-tight">Medicare Central</span>
-        </div>
-        
+
         <h2 class="text-4xl font-extrabold leading-tight mb-4 tracking-tighter">
           Welcome <br> back.
         </h2>
-            <p class="text-gray-400 text-sm leading-relaxed max-w-[280px]">
-                Quản lý y tế gói gọn trong lòng bàn tay. Trải nghiệm sự 
-                <span class="text-white font-medium">tiện lợi tối đa</span> với quy trình số hóa toàn diện, giúp kết nối bệnh nhân và bác sĩ chỉ trong vài giây.
-            </p>
+        <p class="text-gray-400 text-sm leading-relaxed max-w-[280px]">
+          Quản lý y tế gói gọn trong lòng bàn tay. Trải nghiệm sự
+          <span class="text-white font-medium">tiện lợi tối đa</span> với quy trình số hóa toàn diện, giúp kết nối bệnh
+          nhân và bác sĩ chỉ trong vài giây.
+        </p>
       </div>
 
       <div class="relative z-10 text-xs text-gray-500 font-medium">
@@ -33,17 +37,17 @@
         <p class="text-gray-500 mb-10 text-sm">Vui lòng nhập thông tin để truy cập hệ thống.</p>
 
         <form class="space-y-8" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-          
+
           <div>
             <label class="block text-xs font-bold uppercase tracking-widest text-black mb-2">Tên đăng nhập</label>
-            <input formControlName="userName" placeholder="a123" 
-                   class="w-full px-0 py-3 border-b-2 border-gray-100 focus:border-black outline-none transition-all duration-300 bg-transparent placeholder:text-gray-300 text-black">
+            <input formControlName="userName" placeholder="a123"
+              class="w-full px-0 py-3 border-b-2 border-gray-100 focus:border-black outline-none transition-all duration-300 bg-transparent placeholder:text-gray-300 text-black">
           </div>
 
           <div>
             <label class="block text-xs font-bold uppercase tracking-widest text-black mb-2">Mật khẩu</label>
-            <input formControlName="password" type="password" placeholder="••••••••" 
-                   class="w-full px-0 py-3 border-b-2 border-gray-100 focus:border-black outline-none transition-all duration-300 bg-transparent placeholder:text-gray-300 text-black">
+            <input formControlName="password" type="password" placeholder="••••••••"
+              class="w-full px-0 py-3 border-b-2 border-gray-100 focus:border-black outline-none transition-all duration-300 bg-transparent placeholder:text-gray-300 text-black">
           </div>
 
           <div class="flex items-center justify-between text-sm mt-4">
@@ -55,13 +59,13 @@
           </div>
 
           <div class="pt-4">
-            <button type="submit" 
-                    class="group relative w-full flex items-center justify-center px-8 py-4 font-bold text-white bg-black rounded-full overflow-hidden transition-all duration-300 hover:bg-gray-800 active:scale-[0.98] shadow-lg shadow-gray-200">
+            <button type="submit"
+              class="group relative w-full flex items-center justify-center px-8 py-4 font-bold text-white bg-black rounded-full overflow-hidden transition-all duration-300 hover:bg-gray-800 active:scale-[0.98] shadow-lg shadow-gray-200">
               <span>Sign In</span>
               <i class="fas fa-arrow-right ml-3 text-xs group-hover:translate-x-1 transition-transform"></i>
             </button>
           </div>
-          
+
         </form>
 
         <p class="text-center mt-10 text-sm text-gray-500">
