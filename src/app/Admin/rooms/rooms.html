@@ -4,8 +4,7 @@
     <div>
       <div class="flex items-center gap-3">
         <h1 class="text-2xl font-black tracking-tight text-slate-900">Phòng Khám</h1>
-        <span
-          class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200">
+        <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200">
           {{ filteredRoomList.length }} phòng
         </span>
       </div>
@@ -121,7 +120,6 @@
           <tr>
             <th class="px-6 py-4">Phòng khám</th>
             <th class="px-6 py-4">Khoa</th>
-            <th class="px-6 py-4">Bác sĩ đang khám</th>
             <th class="px-6 py-4 text-center">Trạng thái</th>
             <th class="px-6 py-4 text-right">Thao tác</th>
           </tr>
@@ -173,8 +171,8 @@
                     room.assignedDoctorDepartment }}</p>
                 </div>
               </div>
-              <span *ngIf="!room.assignedDoctorName"
-                class="text-xs text-slate-300 italic font-medium">Không có bác sĩ</span>
+              <span *ngIf="!room.assignedDoctorName" class="text-xs text-slate-300 italic font-medium">Không có bác
+                sĩ</span>
             </td>
             <!-- Trạng thái -->
             <td class="px-6 py-4 text-center">
@@ -260,13 +258,11 @@
           <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Trạng thái hoạt động</label>
           <div class="flex items-center gap-4">
             <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio" [value]="true" [(ngModel)]="currentRoom.isActive"
-                class="accent-emerald-600 w-4 h-4">
+              <input type="radio" [value]="true" [(ngModel)]="currentRoom.isActive" class="accent-emerald-600 w-4 h-4">
               <span class="text-sm font-semibold text-emerald-700">Hoạt động</span>
             </label>
             <label class="flex items-center gap-2 cursor-pointer">
-              <input type="radio" [value]="false" [(ngModel)]="currentRoom.isActive"
-                class="accent-rose-600 w-4 h-4">
+              <input type="radio" [value]="false" [(ngModel)]="currentRoom.isActive" class="accent-rose-600 w-4 h-4">
               <span class="text-sm font-semibold text-rose-600">Ngưng hoạt động</span>
             </label>
           </div>
