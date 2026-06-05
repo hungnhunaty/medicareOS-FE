@@ -9,10 +9,10 @@ import { Subscription } from 'rxjs';
 interface Room {
   roomId: number;
   roomName: string;
-  roomType: string;
-  floor: number;
+  departmentId: number;
+  departmentName: string;
+  isActive: boolean;
   status: string;
-  description: string;
   assignedDoctorId?: number;
   assignedDoctorName?: string;
   assignedDoctorDepartment?: string;
@@ -28,8 +28,7 @@ interface Room {
 export class Rooms implements OnInit, OnDestroy {
   // Bộ lọc
   searchKeyword: string = '';
-  selectedFloor: string = 'Tất cả tầng';
-  selectedType: string = 'Tất cả loại phòng';
+  selectedDepartment: string = 'Tất cả khoa';
   selectedStatus: string = 'Tất cả trạng thái';
   private searchSub?: Subscription;
 
@@ -40,8 +39,8 @@ export class Rooms implements OnInit, OnDestroy {
 
   // Danh sách phòng khám
   roomList: Room[] = [];
-  // Danh sách bác sĩ (để gán phòng)
-  doctorList: any[] = [];
+  // Danh sách khoa (departments)
+  departmentList: { departmentId: number; name: string }[] = [];
 
   constructor(
     private adminRoomService: AdminRoomService,
@@ -52,7 +51,7 @@ export class Rooms implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadRooms();
-    this.loadDoctors();
+    this.loadDepartments();
     this.searchSub = this.searchService.currentSearchKeyword.subscribe(keyword => {
       this.searchKeyword = keyword;
       this.cd.detectChanges();
@@ -69,10 +68,10 @@ export class Rooms implements OnInit, OnDestroy {
         this.roomList = data.map(r => ({
           roomId: r.roomId,
           roomName: r.roomName || '',
-          roomType: r.roomType || 'Phòng khám',
-          floor: r.floor || 1,
-          status: r.status || 'Trống',
-          description: r.description || '',
+          departmentId: r.departmentId,
+          departmentName: r.departmentName || '',
+          isActive: r.isActive,
+          status: r.status || (r.isActive ? 'Trống' : 'Ngưng hoạt động'),
           assignedDoctorId: r.assignedDoctorId || null,
           assignedDoctorName: r.assignedDoctorName || '',
           assignedDoctorDepartment: r.assignedDoctorDepartment || ''
@@ -83,13 +82,23 @@ export class Rooms implements OnInit, OnDestroy {
     });
   }
 
-  loadDoctors(): void {
+  loadDepartments(): void {
+    // Lấy danh sách khoa từ danh sách staff (unique departments)
     this.adminStaffService.getAllStaff().subscribe({
       next: (data: any[]) => {
-        this.doctorList = data.filter(s => s.role === 'Bác sĩ' && s.status === 'Hoạt động');
+        const deptMap = new Map<number, string>();
+        data.forEach(s => {
+          if (s.departmentId && s.department) {
+            deptMap.set(s.departmentId, s.department);
+          }
+        });
+        this.departmentList = Array.from(deptMap.entries()).map(([id, name]) => ({
+          departmentId: id,
+          name: name
+        }));
         this.cd.detectChanges();
       },
-      error: (err) => console.error('Lỗi tải danh sách bác sĩ:', err)
+      error: (err) => console.error('Lỗi tải danh sách khoa:', err)
     });
   }
 
@@ -97,20 +106,14 @@ export class Rooms implements OnInit, OnDestroy {
     return {
       roomId: 0,
       roomName: '',
-      roomType: 'Phòng khám',
-      floor: 1,
+      departmentId: 1,
+      departmentName: '',
+      isActive: true,
       status: 'Trống',
-      description: '',
       assignedDoctorId: undefined,
       assignedDoctorName: '',
       assignedDoctorDepartment: ''
     };
-  }
-
-  // Lấy danh sách tầng duy nhất
-  get uniqueFloors(): number[] {
-    const floors = this.roomList.map(r => r.floor);
-    return [...new Set(floors)].sort((a, b) => a - b);
   }
 
   // Danh sách phòng sau khi áp dụng bộ lọc
@@ -118,22 +121,19 @@ export class Rooms implements OnInit, OnDestroy {
     return this.roomList.filter(room => {
       const name = room.roomName || '';
       const doctor = room.assignedDoctorName || '';
-      const desc = room.description || '';
+      const dept = room.departmentName || '';
 
       const matchKeyword = name.toLowerCase().includes(this.searchKeyword.toLowerCase()) ||
         doctor.toLowerCase().includes(this.searchKeyword.toLowerCase()) ||
-        desc.toLowerCase().includes(this.searchKeyword.toLowerCase());
+        dept.toLowerCase().includes(this.searchKeyword.toLowerCase());
 
-      const matchFloor = this.selectedFloor === 'Tất cả tầng' ||
-        room.floor === parseInt(this.selectedFloor);
-
-      const matchType = this.selectedType === 'Tất cả loại phòng' ||
-        room.roomType === this.selectedType;
+      const matchDept = this.selectedDepartment === 'Tất cả khoa' ||
+        room.departmentName === this.selectedDepartment;
 
       const matchStatus = this.selectedStatus === 'Tất cả trạng thái' ||
         room.status === this.selectedStatus;
 
-      return matchKeyword && matchFloor && matchType && matchStatus;
+      return matchKeyword && matchDept && matchStatus;
     });
   }
 
@@ -141,12 +141,20 @@ export class Rooms implements OnInit, OnDestroy {
   get totalRooms(): number { return this.roomList.length; }
   get availableRooms(): number { return this.roomList.filter(r => r.status === 'Trống').length; }
   get occupiedRooms(): number { return this.roomList.filter(r => r.status === 'Đang sử dụng').length; }
-  get maintenanceRooms(): number { return this.roomList.filter(r => r.status === 'Bảo trì').length; }
+  get inactiveRooms(): number { return this.roomList.filter(r => r.status === 'Ngưng hoạt động').length; }
+
+  // Danh sách khoa duy nhất từ room
+  get uniqueDepartments(): string[] {
+    return [...new Set(this.roomList.map(r => r.departmentName).filter(d => d))];
+  }
 
   // Mở modal thêm mới
   openAddModal(): void {
     this.modalMode = 'add';
     this.currentRoom = this.getInitialRoom();
+    if (this.departmentList.length > 0) {
+      this.currentRoom.departmentId = this.departmentList[0].departmentId;
+    }
     this.showModal = true;
   }
 
@@ -169,17 +177,13 @@ export class Rooms implements OnInit, OnDestroy {
       return;
     }
 
-    const roomDto = {
-      roomName: this.currentRoom.roomName.trim(),
-      roomType: this.currentRoom.roomType,
-      floor: this.currentRoom.floor,
-      status: this.currentRoom.status,
-      description: this.currentRoom.description,
-      assignedDoctorId: this.currentRoom.assignedDoctorId || null
-    };
-
     if (this.modalMode === 'add') {
-      this.adminRoomService.createRoom(roomDto).subscribe({
+      const createDto = {
+        roomName: this.currentRoom.roomName.trim(),
+        departmentId: this.currentRoom.departmentId
+      };
+
+      this.adminRoomService.createRoom(createDto).subscribe({
         next: () => {
           this.loadRooms();
           this.closeModal();
@@ -187,7 +191,13 @@ export class Rooms implements OnInit, OnDestroy {
         error: (err) => alert('Lỗi khi thêm phòng: ' + (err.error?.message || 'Không rõ nguyên nhân'))
       });
     } else {
-      this.adminRoomService.updateRoom(this.currentRoom.roomId, roomDto).subscribe({
+      const updateDto = {
+        roomName: this.currentRoom.roomName.trim(),
+        departmentId: this.currentRoom.departmentId,
+        isActive: this.currentRoom.isActive
+      };
+
+      this.adminRoomService.updateRoom(this.currentRoom.roomId, updateDto).subscribe({
         next: () => {
           this.loadRooms();
           this.closeModal();
@@ -197,20 +207,12 @@ export class Rooms implements OnInit, OnDestroy {
     }
   }
 
-  // Đổi trạng thái nhanh
-  toggleStatus(room: Room): void {
-    let nextStatus = '';
-    if (room.status === 'Trống') nextStatus = 'Đang sử dụng';
-    else if (room.status === 'Đang sử dụng') nextStatus = 'Bảo trì';
-    else nextStatus = 'Trống';
-
+  // Đổi trạng thái nhanh (Active/Inactive)
+  toggleActive(room: Room): void {
     const updateDto = {
       roomName: room.roomName,
-      roomType: room.roomType,
-      floor: room.floor,
-      status: nextStatus,
-      description: room.description,
-      assignedDoctorId: room.assignedDoctorId || null
+      departmentId: room.departmentId,
+      isActive: !room.isActive
     };
 
     this.adminRoomService.updateRoom(room.roomId, updateDto).subscribe({
@@ -229,47 +231,16 @@ export class Rooms implements OnInit, OnDestroy {
     }
   }
 
-  // Helper: lấy tên bác sĩ theo ID
-  getDoctorName(doctorId: number | undefined): string {
-    if (!doctorId) return '';
-    const doc = this.doctorList.find(d => d.userId === doctorId);
-    return doc ? doc.name : '';
-  }
-
-  // Helper: icon trạng thái
-  getStatusIcon(status: string): string {
-    switch (status) {
-      case 'Trống': return '🟢';
-      case 'Đang sử dụng': return '🔵';
-      case 'Bảo trì': return '🟡';
-      default: return '⚪';
-    }
-  }
-
-  // Helper: icon loại phòng
-  getRoomTypeIcon(type: string): string {
-    switch (type) {
-      case 'Phòng khám': return '🩺';
-      case 'Phòng thủ thuật': return '💉';
-      case 'Phòng xét nghiệm': return '🧪';
-      case 'Phòng chẩn đoán hình ảnh': return '📷';
-      case 'Phòng cấp cứu': return '🚨';
-      default: return '🏥';
-    }
-  }
-
   // Reset bộ lọc
   clearFilters(): void {
     this.searchKeyword = '';
-    this.selectedFloor = 'Tất cả tầng';
-    this.selectedType = 'Tất cả loại phòng';
+    this.selectedDepartment = 'Tất cả khoa';
     this.selectedStatus = 'Tất cả trạng thái';
   }
 
   get hasActiveFilters(): boolean {
     return !!this.searchKeyword ||
-      this.selectedFloor !== 'Tất cả tầng' ||
-      this.selectedType !== 'Tất cả loại phòng' ||
+      this.selectedDepartment !== 'Tất cả khoa' ||
       this.selectedStatus !== 'Tất cả trạng thái';
   }
 }
