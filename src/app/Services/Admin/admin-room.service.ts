@@ -14,6 +14,10 @@ export class AdminRoomService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
+  getAllDepartments(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/departments`);
+  }
+
   getRoomById(roomId: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${roomId}`);
   }

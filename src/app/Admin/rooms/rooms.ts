@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AdminRoomService } from '../../Services/Admin/admin-room.service';
-import { AdminStaffService } from '../../Services/Admin/admin-staff.service';
 import { SearchService } from '../../Services/search.service';
 import { Subscription } from 'rxjs';
 
@@ -44,7 +43,6 @@ export class Rooms implements OnInit, OnDestroy {
 
   constructor(
     private adminRoomService: AdminRoomService,
-    private adminStaffService: AdminStaffService,
     private searchService: SearchService,
     private cd: ChangeDetectorRef
   ) { }
@@ -83,18 +81,11 @@ export class Rooms implements OnInit, OnDestroy {
   }
 
   loadDepartments(): void {
-    // Lấy danh sách khoa từ danh sách staff (unique departments)
-    this.adminStaffService.getAllStaff().subscribe({
+    this.adminRoomService.getAllDepartments().subscribe({
       next: (data: any[]) => {
-        const deptMap = new Map<number, string>();
-        data.forEach(s => {
-          if (s.departmentId && s.department) {
-            deptMap.set(s.departmentId, s.department);
-          }
-        });
-        this.departmentList = Array.from(deptMap.entries()).map(([id, name]) => ({
-          departmentId: id,
-          name: name
+        this.departmentList = data.map(d => ({
+          departmentId: d.departmentId,
+          name: d.name
         }));
         this.cd.detectChanges();
       },
