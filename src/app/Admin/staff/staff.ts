@@ -149,7 +149,7 @@ export class Staff implements OnInit, OnDestroy {
         department: this.currentStaff.department,
         status: this.currentStaff.status,
         baseSalary: 15000000,
-        specialty: this.currentStaff.role.includes('Bác sĩ') ? 'Đa khoa' : '',
+        specialty: this.currentStaff.role.includes('Bác sĩ') ? (this.currentStaff.specialty?.trim() || 'Đa khoa') : '',
         password: this.currentStaff.password
       };
 

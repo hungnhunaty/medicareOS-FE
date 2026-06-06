@@ -242,6 +242,13 @@
           </div>
         </div>
 
+        <div class="space-y-1.5" *ngIf="currentStaff.role === 'Bác sĩ'">
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Chuyên khoa</label>
+          <input type="text" [(ngModel)]="currentStaff.specialty" placeholder="Ví dụ: Nội khoa, Tim mạch, Nhi khoa..."
+            class="w-full rounded-xl bg-slate-50 py-2.5 px-3 text-sm border border-slate-200 focus:bg-white focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-50 transition-all font-semibold text-slate-900">
+          <p class="text-[10px] text-slate-400 font-medium mt-0.5">Để trống sẽ mặc định là "Đa khoa"</p>
+        </div>
+
       </div>
 
       <!-- Modal Footer -->
